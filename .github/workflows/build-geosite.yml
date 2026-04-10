@@ -67,7 +67,7 @@ jobs:
           cd release-branch
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
-          git add geosite.dat geosite.dat.sha256
+          git add -A
           git commit -m "chore: publish latest geosite.dat" || echo "No changes to commit"
           git push
 
