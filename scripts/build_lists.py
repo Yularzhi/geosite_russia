@@ -11,7 +11,9 @@ SESSION = requests.Session()
 SESSION.headers.update({"User-Agent": "custom-geosite-builder/1.0"})
 
 DOMAIN_RE = re.compile(r"^(?:[a-z0-9-]+\.)+[a-z]{2,63}$")
+
 DLC_BASE = "https://raw.githubusercontent.com/v2fly/domain-list-community/master/data/"
+RUNETFREEDOM_BASE = "https://raw.githubusercontent.com/runetfreedom/russia-domains-list/main/"
 
 TEXT_SOURCES = {
     "custom-ru": [
@@ -20,7 +22,8 @@ TEXT_SOURCES = {
     ],
 }
 
-ROOT_DLC_TAGS = [
+# Только эти теги попадут в итоговый geosite.dat
+ROOT_TAGS = [
     "category-ads-all",
     "telegram",
     "viber",
@@ -30,7 +33,24 @@ ROOT_DLC_TAGS = [
     "google",
     "supercell",
     "roblox",
+    "private",
+    "ru-available-only-inside",
 ]
+
+# Где лежит исходник каждого тега
+TAG_SOURCE = {
+    "category-ads-all": "dlc",
+    "telegram": "dlc",
+    "viber": "dlc",
+    "whatsapp": "dlc",
+    "meta": "dlc",
+    "facebook": "dlc",
+    "google": "dlc",
+    "supercell": "dlc",
+    "roblox": "dlc",
+    "private": "dlc",
+    "ru-available-only-inside": "runetfreedom",
+}
 
 
 def fetch_text(url: str) -> str:
@@ -51,6 +71,7 @@ def normalize_text_domain(line: str) -> str | None:
     if line.startswith("#") or line.startswith("//") or line.startswith(";"):
         return None
 
+    # antifilter format: *://*.example.com/*
     line = line.replace("*://*.", "")
     line = line.replace("*://", "")
     line = line.replace("/*", "")
@@ -106,62 +127,95 @@ def build_custom_ru() -> None:
     write_tag("custom-ru", "\n".join(sorted(domains)) + "\n")
 
 
-def extract_includes(text: str) -> set[str]:
-    includes: set[str] = set()
+def get_tag_url(tag: str) -> str:
+    source = TAG_SOURCE[tag]
+    if source == "dlc":
+        return DLC_BASE + tag
+    if source == "runetfreedom":
+        return RUNETFREEDOM_BASE + tag
+    raise ValueError(f"Unknown source for tag: {tag}")
+
+
+def strip_inline_comment(line: str) -> str:
+    if "#" in line:
+        line = line.split("#", 1)[0]
+    return line.strip()
+
+
+def parse_upstream_line(line: str) -> tuple[str, str] | None:
+    """
+    Возвращает:
+    - ("include", "child-tag")
+    - ("rule", "raw rule line")
+    - None
+    """
+    line = strip_inline_comment(line)
+    if not line:
+        return None
+
+    if line.startswith("include:"):
+        child = line.split(":", 1)[1].strip()
+        if child:
+            return ("include", child)
+        return None
+
+    # Сохраняем правило как есть:
+    # domain
+    # full:domain
+    # keyword:...
+    # regexp:...
+    # domain @attr
+    return ("rule", line)
+
+
+def flatten_tag(tag: str, seen: set[str] | None = None) -> list[str]:
+    if seen is None:
+        seen = set()
+
+    if tag in seen:
+        return []
+
+    seen.add(tag)
+
+    text = fetch_text(get_tag_url(tag))
+    rules: list[str] = []
 
     for raw_line in text.splitlines():
-        line = raw_line.strip()
-        if not line or line.startswith("#"):
+        parsed = parse_upstream_line(raw_line)
+        if not parsed:
             continue
 
-        # убираем inline комментарий
-        if "#" in line:
-            line = line.split("#", 1)[0].strip()
+        kind, value = parsed
 
-        if not line:
-            continue
+        if kind == "include":
+            rules.extend(flatten_tag(value, seen))
+        else:
+            rules.append(value)
 
-        # domain-list-community часто хранит много токенов в одной строке
-        for token in line.split():
-            if token.startswith("include:"):
-                child = token.split(":", 1)[1].strip()
-                if child:
-                    includes.add(child)
-
-    return includes
+    return rules
 
 
-def fetch_dlc_with_dependencies(root_tags: list[str]) -> dict[str, str]:
-    result: dict[str, str] = {}
-    queue = list(root_tags)
-    seen: set[str] = set()
-
-    while queue:
-        tag = queue.pop(0)
-        if tag in seen:
-            continue
-        seen.add(tag)
-
-        text = fetch_text(DLC_BASE + tag)
-        result[tag] = text
-
-        for child in sorted(extract_includes(text)):
-            if child not in seen:
-                queue.append(child)
-
+def dedupe_keep_order(items: list[str]) -> list[str]:
+    seen = set()
+    result = []
+    for item in items:
+        if item not in seen:
+            seen.add(item)
+            result.append(item)
     return result
 
 
-def build_dlc_tags() -> None:
-    dlc_files = fetch_dlc_with_dependencies(ROOT_DLC_TAGS)
-    for tag, content in dlc_files.items():
-        write_tag(tag, content)
+def build_flattened_root_tags() -> None:
+    for tag in ROOT_TAGS:
+        rules = flatten_tag(tag)
+        rules = dedupe_keep_order(rules)
+        write_tag(tag, "\n".join(rules) + "\n")
 
 
 def main() -> None:
     cleanup_data_dir()
     build_custom_ru()
-    build_dlc_tags()
+    build_flattened_root_tags()
 
     print("Done. Generated tags:")
     for file in sorted(DATA_DIR.iterdir()):
