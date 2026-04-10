@@ -110,15 +110,8 @@ def parse_dlc_line(line: str) -> str | None:
     """
     Преобразует строки из domain-list-community в нормальный вид
     для нашего кастомного data/<tag>.
-
-    Примеры:
-    example.com                    -> example.com
-    full:example.com               -> full:example.com
-    keyword:google                 -> keyword:google
-    regexp:^abc.*                  -> regexp:^abc.*
-    include:facebook               -> include:facebook
-    graph.whatsapp.com @ads        -> graph.whatsapp.com
     """
+
     line = line.strip()
 
     if not line:
@@ -126,9 +119,19 @@ def parse_dlc_line(line: str) -> str | None:
     if line.startswith("#"):
         return None
 
+    # убираем inline-комментарии: "include:apple-dev # swift inside"
+    if "#" in line:
+        line = line.split("#", 1)[0].strip()
+
+    if not line:
+        return None
+
     # убираем атрибуты вида: @ads
     if " @" in line:
         line = line.split(" @", 1)[0].strip()
+
+    if not line:
+        return None
 
     # include сохраняем как есть
     if line.startswith("include:"):
@@ -157,7 +160,7 @@ def parse_dlc_line(line: str) -> str | None:
 def fetch_dlc_tag(tag: str, seen: set[str] | None = None) -> set[str]:
     """
     Рекурсивно подтягивает tag из domain-list-community.
-    include:* разворачиваем, чтобы твои итоговые файлы были самодостаточными.
+    include:* разворачиваем, чтобы итоговые файлы были самодостаточными.
     """
     if tag in SEEN_DLC_TAGS:
         return set(SEEN_DLC_TAGS[tag])
@@ -170,7 +173,11 @@ def fetch_dlc_tag(tag: str, seen: set[str] | None = None) -> set[str]:
     seen.add(tag)
 
     url = DLC_BASE + tag
-    lines = fetch_lines(url)
+    try:
+        lines = fetch_lines(url)
+    except requests.HTTPError as e:
+        print(f"[WARN] failed to fetch DLC tag '{tag}': {e}")
+        return set()
 
     result: set[str] = set()
 
@@ -180,8 +187,9 @@ def fetch_dlc_tag(tag: str, seen: set[str] | None = None) -> set[str]:
             continue
 
         if parsed.startswith("include:"):
-            child = parsed.split(":", 1)[1]
-            result.update(fetch_dlc_tag(child, seen))
+            child = parsed.split(":", 1)[1].strip()
+            if child:
+                result.update(fetch_dlc_tag(child, seen))
         else:
             result.add(parsed)
 
