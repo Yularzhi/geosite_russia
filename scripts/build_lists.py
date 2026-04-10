@@ -22,7 +22,7 @@ TEXT_SOURCES = {
     ],
 }
 
-# Только эти теги попадут в итоговый geosite.dat
+# Только эти теги должны попасть в итоговый geosite.dat как отдельные секции
 ROOT_TAGS = [
     "category-ads-all",
     "telegram",
@@ -37,8 +37,9 @@ ROOT_TAGS = [
     "ru-available-only-inside",
 ]
 
-# Где лежит исходник каждого тега
-TAG_SOURCE = {
+# Явно указываем только особые корневые теги.
+# Все include-зависимости по умолчанию считаем тегами из domain-list-community.
+ROOT_TAG_SOURCE = {
     "category-ads-all": "dlc",
     "telegram": "dlc",
     "viber": "dlc",
@@ -128,11 +129,13 @@ def build_custom_ru() -> None:
 
 
 def get_tag_url(tag: str) -> str:
-    source = TAG_SOURCE[tag]
+    source = ROOT_TAG_SOURCE.get(tag, "dlc")
+
     if source == "dlc":
         return DLC_BASE + tag
     if source == "runetfreedom":
         return RUNETFREEDOM_BASE + tag
+
     raise ValueError(f"Unknown source for tag: {tag}")
 
 
