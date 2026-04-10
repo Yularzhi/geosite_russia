@@ -244,6 +244,7 @@ def build_ru_blocked():
 
 def build_flat_root_tags():
     for tag in ROOT_TAGS:
+        print(f"Building tag: {tag}")
         rules = flatten_rules(tag)
         rules = dedupe_keep_order(rules)
         write_tag(tag, rules)
