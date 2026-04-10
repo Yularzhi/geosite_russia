@@ -1,0 +1,61 @@
+name: Build geosite.dat
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "17 2 * * *"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout this repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.22"
+
+      - name: Install Python dependencies
+        run: pip install -r requirements.txt
+
+      - name: Build text lists
+        run: python scripts/build_lists.py
+
+      - name: Clone domain-list-community
+        run: git clone https://github.com/v2fly/domain-list-community.git dlc
+
+      - name: Build dat
+        run: |
+          cd dlc
+          go mod download
+          go run ./ --datapath=../data
+          mv dlc.dat ../geosite.dat
+
+      - name: Create checksums
+        run: sha256sum geosite.dat > geosite.dat.sha256
+
+      - name: Commit generated text lists
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add data
+          git diff --cached --quiet || git commit -m "Update source lists"
+          git push
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: geosite-dat
+          path: |
+            geosite.dat
+            geosite.dat.sha256
