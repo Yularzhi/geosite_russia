@@ -13,18 +13,16 @@ SESSION.headers.update({"User-Agent": "custom-geosite-builder/1.0"})
 DOMAIN_RE = re.compile(r"^(?:[a-z0-9-]+\.)+[a-z]{2,63}$")
 
 DLC_BASE = "https://raw.githubusercontent.com/v2fly/domain-list-community/master/data/"
-RUNETFREEDOM_BASE = "https://raw.githubusercontent.com/runetfreedom/russia-domains-list/main/"
 
 TEXT_SOURCES = {
-    "custom-ru": [
+    "ru-blocked": [
         "https://community.antifilter.download/list/domains.txt",
-        "https://raw.githubusercontent.com/1andrevich/Re-filter-lists/main/domains_all.lst",
     ],
 }
 
-# Только эти теги должны попасть в итоговый geosite.dat как отдельные секции
 ROOT_TAGS = [
     "category-ads-all",
+    "category-ru",
     "telegram",
     "viber",
     "whatsapp",
@@ -34,13 +32,11 @@ ROOT_TAGS = [
     "supercell",
     "roblox",
     "private",
-    "ru-available-only-inside",
 ]
 
-# Для корневых тегов указываем источник явно.
-# Все include-зависимости по умолчанию считаем тегами из domain-list-community.
 ROOT_TAG_SOURCE = {
     "category-ads-all": "dlc",
+    "category-ru": "dlc",
     "telegram": "dlc",
     "viber": "dlc",
     "whatsapp": "dlc",
@@ -50,8 +46,9 @@ ROOT_TAG_SOURCE = {
     "supercell": "dlc",
     "roblox": "dlc",
     "private": "dlc",
-    "ru-available-only-inside": "runetfreedom",
 }
+
+GFW_URL = "https://raw.githubusercontent.com/Loyalsoldier/surge-rules/release/gfw.txt"
 
 
 def fetch_text(url: str) -> str:
@@ -72,7 +69,6 @@ def normalize_text_domain(line: str) -> str | None:
     if line.startswith("#") or line.startswith("//") or line.startswith(";"):
         return None
 
-    # antifilter format: *://*.example.com/*
     line = line.replace("*://*.", "")
     line = line.replace("*://", "")
     line = line.replace("/*", "")
@@ -115,29 +111,6 @@ def cleanup_data_dir() -> None:
             item.unlink()
 
 
-def build_custom_ru() -> None:
-    domains: set[str] = set()
-
-    for url in TEXT_SOURCES["custom-ru"]:
-        for line in fetch_lines(url):
-            domain = normalize_text_domain(line)
-            if domain:
-                domains.add(domain)
-
-    write_tag("custom-ru", sorted(domains))
-
-
-def get_tag_url(tag: str) -> str:
-    source = ROOT_TAG_SOURCE.get(tag, "dlc")
-
-    if source == "dlc":
-        return DLC_BASE + tag
-    if source == "runetfreedom":
-        return RUNETFREEDOM_BASE + tag
-
-    raise ValueError(f"Unknown source for tag: {tag}")
-
-
 def strip_inline_comment(line: str) -> str:
     if "#" in line:
         line = line.split("#", 1)[0]
@@ -145,11 +118,6 @@ def strip_inline_comment(line: str) -> str:
 
 
 def split_attrs(line: str) -> tuple[str, set[str]]:
-    """
-    'include:google @ads @cn' -> ('include:google', {'ads', 'cn'})
-    'google.com @ads'         -> ('google.com', {'ads'})
-    'google.com'              -> ('google.com', set())
-    """
     parts = line.split()
     if not parts:
         return "", set()
@@ -167,12 +135,6 @@ def split_attrs(line: str) -> tuple[str, set[str]]:
 
 
 def parse_upstream_line(line: str) -> tuple[str, str, set[str]] | None:
-    """
-    Возвращает:
-    - ("include", "child-tag", {"ads"})
-    - ("rule", "raw rule line without attrs", {"ads"})
-    - None
-    """
     line = strip_inline_comment(line)
     if not line:
         return None
@@ -196,15 +158,7 @@ def rule_matches_attrs(rule_attrs: set[str], required_attrs: set[str] | None) ->
     return required_attrs.issubset(rule_attrs)
 
 
-def merge_required_attrs(
-    parent_required: set[str] | None,
-    local_attrs: set[str],
-) -> set[str] | None:
-    """
-    Логика важная:
-    - если мы уже внутри @ads-контекста, он должен сохраняться дальше
-    - если локальный include добавляет свои атрибуты, объединяем
-    """
+def merge_required_attrs(parent_required, local_attrs):
     if parent_required and local_attrs:
         return set(parent_required) | set(local_attrs)
     if parent_required:
@@ -214,22 +168,22 @@ def merge_required_attrs(
     return None
 
 
-def flatten_rules(
-    tag: str,
-    required_attrs: set[str] | None = None,
-    seen: set[tuple[str, tuple[str, ...]]] | None = None,
-) -> list[str]:
+def get_tag_url(tag: str) -> str:
+    return DLC_BASE + tag
+
+
+def flatten_rules(tag: str, required_attrs=None, seen=None) -> list[str]:
     if seen is None:
         seen = set()
 
-    seen_key = (tag, tuple(sorted(required_attrs or set())))
-    if seen_key in seen:
+    key = (tag, tuple(sorted(required_attrs or [])))
+    if key in seen:
         return []
 
-    seen.add(seen_key)
+    seen.add(key)
 
     text = fetch_text(get_tag_url(tag))
-    rules: list[str] = []
+    rules = []
 
     for raw_line in text.splitlines():
         parsed = parse_upstream_line(raw_line)
@@ -239,8 +193,8 @@ def flatten_rules(
         kind, value, attrs = parsed
 
         if kind == "include":
-            child_required_attrs = merge_required_attrs(required_attrs, attrs)
-            rules.extend(flatten_rules(value, child_required_attrs, seen))
+            child_required = merge_required_attrs(required_attrs, attrs)
+            rules.extend(flatten_rules(value, child_required, seen))
         else:
             if rule_matches_attrs(attrs, required_attrs):
                 rules.append(value)
@@ -258,22 +212,49 @@ def dedupe_keep_order(items: list[str]) -> list[str]:
     return result
 
 
-def build_flat_root_tags() -> None:
+def build_ru_blocked():
+    domains = set()
+
+    # antifilter
+    for url in TEXT_SOURCES["ru-blocked"]:
+        for line in fetch_lines(url):
+            domain = normalize_text_domain(line)
+            if domain:
+                domains.add(domain)
+
+    # gfw
+    for raw_line in fetch_lines(GFW_URL):
+        parsed = parse_upstream_line(raw_line)
+        if not parsed:
+            continue
+
+        kind, value, _ = parsed
+        if kind != "rule":
+            continue
+
+        if value.startswith(("full:", "keyword:", "regexp:", "domain:")):
+            continue
+
+        domain = normalize_text_domain(value)
+        if domain:
+            domains.add(domain)
+
+    write_tag("ru-blocked", sorted(domains))
+
+
+def build_flat_root_tags():
     for tag in ROOT_TAGS:
         rules = flatten_rules(tag)
         rules = dedupe_keep_order(rules)
         write_tag(tag, rules)
 
 
-def main() -> None:
+def main():
     cleanup_data_dir()
-    build_custom_ru()
+    build_ru_blocked()
     build_flat_root_tags()
 
-    print("Done. Generated tags:")
-    for file in sorted(DATA_DIR.iterdir()):
-        if file.is_file():
-            print(f"- {file.name}")
+    print("Done.")
 
 
 if __name__ == "__main__":
