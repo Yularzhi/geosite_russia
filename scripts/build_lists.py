@@ -13,7 +13,7 @@ SESSION.headers.update({"User-Agent": "custom-geosite-builder/1.0"})
 DOMAIN_RE = re.compile(r"^(?:[a-z0-9-]+\.)+[a-z]{2,63}$")
 
 DLC_BASE = "https://raw.githubusercontent.com/v2fly/domain-list-community/master/data/"
-GFW_URL = "https://raw.githubusercontent.com/Loyalsoldier/surge-rules/release/gfw.txt"
+PROXY_URL = "https://raw.githubusercontent.com/Loyalsoldier/surge-rules/release/proxy.txt"
 
 TEXT_SOURCES = {
     "ru-blocked": [
@@ -21,7 +21,6 @@ TEXT_SOURCES = {
     ],
 }
 
-# Только эти теги должны попасть в итоговый geosite.dat как отдельные секции
 ROOT_TAGS = [
     "category-ads-all",
     "category-ru",
@@ -36,7 +35,6 @@ ROOT_TAGS = [
     "private",
 ]
 
-# Все эти теги берем из v2fly/domain-list-community
 ROOT_TAG_SOURCE = {
     "category-ads-all": "dlc",
     "category-ru": "dlc",
@@ -120,11 +118,6 @@ def strip_inline_comment(line: str) -> str:
 
 
 def split_attrs(line: str) -> tuple[str, set[str]]:
-    """
-    'include:google @ads @cn' -> ('include:google', {'ads', 'cn'})
-    'google.com @ads'         -> ('google.com', {'ads'})
-    'google.com'              -> ('google.com', set())
-    """
     parts = line.split()
     if not parts:
         return "", set()
@@ -175,9 +168,6 @@ def merge_required_attrs(
     parent_required: set[str] | None,
     local_attrs: set[str],
 ) -> set[str] | None:
-    """
-    Если мы уже внутри @ads-контекста, он должен сохраняться дальше.
-    """
     if parent_required and local_attrs:
         return set(parent_required) | set(local_attrs)
     if parent_required:
@@ -240,8 +230,29 @@ def dedupe_keep_order(items: list[str]) -> list[str]:
     return result
 
 
+def extract_plain_domains_from_rules(rules: list[str]) -> set[str]:
+    """
+    Берем только обычные доменные строки.
+    full:/keyword:/regexp:/domain: и прочие спец-правила не участвуют в вычитании.
+    """
+    result: set[str] = set()
+
+    for rule in rules:
+        rule = rule.strip()
+        if not rule:
+            continue
+        if rule.startswith(("full:", "keyword:", "regexp:", "domain:", "include:")):
+            continue
+
+        domain = normalize_text_domain(rule)
+        if domain:
+            result.add(domain)
+
+    return result
+
+
 def build_ru_blocked() -> None:
-    domains = set()
+    domains: set[str] = set()
 
     # antifilter
     for url in TEXT_SOURCES["ru-blocked"]:
@@ -250,11 +261,18 @@ def build_ru_blocked() -> None:
             if domain:
                 domains.add(domain)
 
-    # gfw from Loyalsoldier surge-rules
-    for line in fetch_lines(GFW_URL):
+    # category-ru plain domains for exclusion from proxy.txt
+    category_ru_rules = flatten_rules("category-ru")
+    category_ru_domains = extract_plain_domains_from_rules(category_ru_rules)
+
+    # proxy.txt minus category-ru
+    for line in fetch_lines(PROXY_URL):
         domain = normalize_text_domain(line)
-        if domain:
-            domains.add(domain)
+        if not domain:
+            continue
+        if domain in category_ru_domains:
+            continue
+        domains.add(domain)
 
     write_tag("ru-blocked", sorted(domains))
 
