@@ -1,142 +1,133 @@
 # geosite_russia
 
-Кастомный `geosite.dat` для Xray / v2fly / Sing-box / Happ и других клиентов.
+Кастомный geosite.dat для Xray / Sing-box / Happ и других клиентов.
 
-Репозиторий автоматически собирает оптимизированный набор правил для работы в России с акцентом на:
+Основная цель проекта — создать лёгкий и эффективный набор доменных правил для работы в России:
 - обход блокировок
-- корректную блокировку рекламы
-- стабильную работу популярных сервисов
+- стабильная работа сервисов
 - минимальное потребление памяти
+- чистая и понятная структура
 
 ## 📦 Состав
 
-В итоговом `geosite.dat` доступны следующие теги:
+В итоговом geosite.dat доступны следующие теги:
 
-### 🇷🇺 Основной список
-- `ru-blocked` — объединённый список:
-  - `community.antifilter.download`
-  - `gfw.txt` от Loyalsoldier
+🚀 Основной список
+ru-blocked — объединённый список:
+- community.antifilter.download
+- Loyalsoldier surge-rules (proxy.txt)
 
-### 🇷🇺 Российские ресурсы
-- `category-ru` — официальный upstream список российских доменов из `v2fly/domain-list-community`
+Покрывает:
+- заблокированные сайты
+- популярные сервисы
+- глобальные ресурсы
 
-### 🚫 Реклама
-- `category-ads-all` — официальный список рекламы из `domain-list-community`, развёрнутый в плоский вид
+🇷🇺 Российские ресурсы
+category-ru — официальный список российских доменов из v2fly
 
-### 🔒 Системные
-- `private` — локальные и приватные сети / домены
+🚫 Реклама
+category-ads-all — полный список рекламы (развёрнутый, без include)
 
-### 📱 Сервисы
-- `telegram`
-- `viber`
-- `whatsapp`
-- `meta`
-- `facebook`
-- `google`
-- `supercell`
-- `roblox`
+📱 Сервисы
+telegram
+viber (расширен доменами Rakuten)
+whatsapp
+meta
+facebook
+google
+supercell
+roblox
+
+🔒 Системные
+private — локальные сети и приватные домены
 
 ## ⬇️ Скачать
 
 Актуальная версия:
+https://raw.githubusercontent.com/yularzhi/geosite_russia/release/geosite.dat
 
-`https://raw.githubusercontent.com/yularzhi/geosite_russia/release/geosite.dat`
-
-Контрольная сумма:
-
-`https://raw.githubusercontent.com/yularzhi/geosite_russia/release/geosite.dat.sha256`
+SHA256:
+https://raw.githubusercontent.com/yularzhi/geosite_russia/release/geosite.dat.sha256
 
 ## ⚙️ Использование
 
-Примеры тегов:
+Proxy:
+geosite:ru-blocked
+geosite:telegram
+geosite:viber
+geosite:whatsapp
+geosite:meta
+geosite:google
 
-- `geosite:ru-blocked`
-- `geosite:category-ru`
-- `geosite:category-ads-all`
-- `geosite:private`
-- `geosite:telegram`
-- `geosite:viber`
-- `geosite:whatsapp`
-- `geosite:meta`
-- `geosite:facebook`
-- `geosite:google`
-- `geosite:supercell`
-- `geosite:roblox`
+Direct:
+geosite:category-ru
+geosite:private
 
-## 🎯 Рекомендации по использованию
-
-### Proxy
-- `geosite:ru-blocked`
-- `geosite:telegram`
-- `geosite:viber`
-- `geosite:whatsapp`
-- `geosite:meta`
-- `geosite:google`
-
-### Direct
-- `geosite:private`
-- `geosite:category-ru`
-
-### Block
-- `geosite:category-ads-all`
+Block:
+geosite:category-ads-all
 
 ## 🔄 Автоматизация
 
-Репозиторий автоматически:
-- скачивает исходные списки
-- очищает и нормализует `ru-blocked`
-- подтягивает upstream-теги
-- разворачивает зависимости
-- генерирует `geosite.dat`
-- публикует результат в ветку `release`
+Сборка выполняется автоматически через GitHub Actions:
 
-Обновление выполняется ежедневно через GitHub Actions.
+- скачиваются исходные списки
+- нормализуются домены
+- объединяются списки
+- разворачиваются include зависимости
+- генерируется geosite.dat
+- публикуется в ветку release
+
+Обновление происходит ежедневно.
+
+## 📊 Особенности
+
+- оптимизировано под низкое потребление памяти (~25 MB)
+- отсутствуют лишние и дублирующие списки
+- все зависимости разворачиваются в плоский вид
+- полный контроль над составом списков
 
 ## 📚 Источники
 
-### 🇷🇺 Основной список
-- [community.antifilter.download](https://community.antifilter.download/list/domains.txt)
-- [Loyalsoldier/surge-rules](https://github.com/Loyalsoldier/surge-rules)
+Основные:
+https://community.antifilter.download
+https://github.com/Loyalsoldier/surge-rules
 
-### 📦 Upstream geosite
-- [v2fly/domain-list-community](https://github.com/v2fly/domain-list-community)
+Upstream:
+https://github.com/v2fly/domain-list-community
 
-### 📊 Производные проекты
-- [Loyalsoldier/v2ray-rules-dat](https://github.com/Loyalsoldier/v2ray-rules-dat)
+Производные проекты:
+https://github.com/Loyalsoldier/v2ray-rules-dat
 
 ## 🙏 Благодарности
 
-Огромное спасибо авторам следующих проектов:
-
-### 🔹 v2fly
+v2fly  
 https://github.com/v2fly/domain-list-community  
-Базовый проект geosite, на котором строится вся система правил.
+Базовый проект geosite
 
-### 🔹 Loyalsoldier
+Loyalsoldier  
 https://github.com/Loyalsoldier/v2ray-rules-dat  
-За идеи сборки и удобную экосистему правил.
+Идеи сборки и структура
 
-### 🔹 Loyalsoldier surge-rules
+surge-rules  
 https://github.com/Loyalsoldier/surge-rules  
-За текстовый `gfw.txt`, который используется в сборке `ru-blocked`.
+Источник proxy.txt
 
-### 🔹 Antifilter
+Antifilter  
 https://community.antifilter.download  
-За поддержку списков доменов, используемых для обхода блокировок.
+Список заблокированных доменов
 
 ## ⚠️ Примечания
 
-- `ru-blocked` — это кастомный тег, собранный из `antifilter` и `gfw`
-- `category-ru` и сервисные теги берутся из upstream `v2fly/domain-list-community`
-- `category-ads-all` используется в развёрнутом виде
-- итоговый `geosite.dat` не содержит лишних промежуточных тегов
-- список оптимизирован под снижение потребления памяти
+- ru-blocked — кастомный список (proxy + antifilter)
+- viber расширен доменами Rakuten
+- category-ads-all используется в полном развёрнутом виде
+- итоговый файл не содержит промежуточных тегов
 
 ## 📄 Лицензия
 
 Репозиторий агрегирует данные из сторонних источников.  
-Лицензии и условия использования смотри в исходных проектах.
+Смотри лицензии в оригинальных проектах.
 
 ## 💬 Обратная связь
 
-Если хочешь улучшить списки или добавить новые категории — создавай issue или pull request.
+Pull request'ы и идеи приветствуются.
