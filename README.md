@@ -1,21 +1,32 @@
 # geosite_russia
 
-Кастомный `geosite.dat` для Xray / v2fly / совместимых клиентов (Happ, Sing-box и др.).
+Кастомный `geosite.dat` для Xray / v2fly / Sing-box / Happ и других клиентов.
 
-Репозиторий автоматически собирает облегчённый набор правил, оптимизированный для работы в России, с акцентом на:
+Репозиторий автоматически собирает оптимизированный набор правил для работы в России с акцентом на:
 - стабильную работу мессенджеров
 - обход блокировок
-- блокировку рекламы
+- корректную блокировку рекламы
 - минимальное потребление памяти
-
----
 
 ## 📦 Состав
 
 В итоговом `geosite.dat` доступны следующие теги:
 
-- `custom-ru` — объединённый список (antifilter + refilter)
-- `category-ads` — реклама (на основе upstream)
+### 🇷🇺 Основной список
+- `custom-ru` — объединённый список:
+  - antifilter
+  - refilter
+
+### 🚫 Реклама
+- `category-ads-all` — официальный список из domain-list-community (полностью развёрнут, без include)
+
+### 🌐 Россия (внутренние ресурсы)
+- `ru-available-only-inside` — домены, доступные только внутри РФ (runetfreedom)
+
+### 🔒 Системные
+- `private` — локальные и приватные сети (v2fly)
+
+### 📱 Сервисы
 - `telegram`
 - `viber`
 - `whatsapp`
@@ -25,126 +36,110 @@
 - `supercell`
 - `roblox`
 
----
-
 ## ⬇️ Скачать
 
 Актуальная версия:
-https://raw.githubusercontent.com/yularzhi/geosite_russia/release/geosite.dat
+
+`https://raw.githubusercontent.com/yularzhi/geosite_russia/release/geosite.dat`
 
 Контрольная сумма:
-https://raw.githubusercontent.com/yularzhi/geosite_russia/release/geosite.dat.sha256
 
----
+`https://raw.githubusercontent.com/yularzhi/geosite_russia/release/geosite.dat.sha256`
 
 ## ⚙️ Использование
 
-Подключите `geosite.dat` в клиенте (например Happ или Xray):
-
 Примеры тегов:
-geosite:custom-ru
-geosite:category-ads
-geosite:telegram
-geosite:viber
-geosite:whatsapp
-geosite:meta
-geosite:facebook
-geosite:google
-geosite:supercell
-geosite:roblox
 
----
+- `geosite:custom-ru`
+- `geosite:category-ads-all`
+- `geosite:ru-available-only-inside`
+- `geosite:private`
+- `geosite:telegram`
+- `geosite:viber`
+- `geosite:whatsapp`
+- `geosite:meta`
+- `geosite:facebook`
+- `geosite:google`
+- `geosite:supercell`
+- `geosite:roblox`
 
-## 🎯 Цель проекта
+## 🎯 Рекомендации по использованию
 
-Этот репозиторий создан как альтернатива тяжёлым спискам вроде:
-geosite:ru-blocked
+### Proxy
+- `geosite:custom-ru`
+- `geosite:telegram`
+- `geosite:viber`
+- `geosite:whatsapp`
+- `geosite:meta`
+- `geosite:google`
 
-Проблема таких списков:
-- высокий расход памяти (особенно на iOS)
-- избыточность
-- нестабильная работа некоторых сервисов (например Viber)
+### Direct
+- `geosite:private`
+- `geosite:ru-available-only-inside`
 
-Решение:
-- использовать облегчённый `custom-ru`
-- разделить категории (ads, сервисы)
-- сохранить контроль над маршрутизацией
-
----
+### Block
+- `geosite:category-ads-all`
 
 ## 🔄 Автоматизация
 
 Репозиторий автоматически:
-
 - скачивает исходные списки
-- очищает и нормализует домены
+- очищает и нормализует `custom-ru`
 - удаляет дубликаты
-- объединяет данные
-- генерирует `geosite.dat`
-- публикует его в ветку `release`
+- подтягивает upstream-теги
+- разворачивает все include-зависимости
+- генерирует чистый `geosite.dat` без лишних тегов
+- публикует результат в ветку `release`
 
-Обновление происходит ежедневно через GitHub Actions.
-
----
+Обновление выполняется ежедневно через GitHub Actions.
 
 ## 📚 Источники
 
-### Основной список (custom-ru)
+### 🇷🇺 Основной список
+- [community.antifilter.download](https://community.antifilter.download/list/domains.txt)
+- [Re-filter-lists](https://github.com/1andrevich/Re-filter-lists)
 
-Собран из:
+### 📦 Upstream (geosite база)
+- [v2fly/domain-list-community](https://github.com/v2fly/domain-list-community)
 
-- https://community.antifilter.download/list/domains.txt  
-- https://github.com/1andrevich/Re-filter-lists  
+### 🌐 Россия (доступ только внутри)
+- [runetfreedom/russia-domains-list](https://github.com/runetfreedom/russia-domains-list)
 
----
-
-### Категории сервисов и реклама
-
-Используются данные проекта:
-
-- https://github.com/v2fly/domain-list-community  
-
-На его основе также построен:
-
-- https://github.com/Loyalsoldier/v2ray-rules-dat  
-
----
+### 📊 Производные проекты
+- [Loyalsoldier/v2ray-rules-dat](https://github.com/Loyalsoldier/v2ray-rules-dat)
 
 ## 🙏 Благодарности
 
-Огромное спасибо следующим проектам и их авторам:
+Огромное спасибо авторам следующих проектов:
 
-- **v2fly/domain-list-community**  
-  https://github.com/v2fly/domain-list-community  
-  (база для geosite)
+### 🔹 v2fly
+https://github.com/v2fly/domain-list-community  
+Базовый проект geosite, на котором строится вся система правил.
 
-- **Loyalsoldier/v2ray-rules-dat**  
-  https://github.com/Loyalsoldier/v2ray-rules-dat  
-  (реализация и идеи сборки)
+### 🔹 runetfreedom
+https://github.com/runetfreedom/russia-domains-list  
+За списки доменов, доступных только внутри России.
 
-- **Re-filter-lists**  
-  https://github.com/1andrevich/Re-filter-lists  
-  (списки доменов и фильтрация)
+### 🔹 Loyalsoldier
+https://github.com/Loyalsoldier/v2ray-rules-dat  
+За идеи и реализацию автоматической сборки.
 
-- **community.antifilter.download**  
-  https://community.antifilter.download  
-  (актуальные списки блокировок)
+### 🔹 Re-filter
+https://github.com/1andrevich/Re-filter-lists  
+За актуальные списки доменов.
 
----
+### 🔹 Antifilter
+https://community.antifilter.download  
+За поддержку списков блокировок.
 
 ## ⚠️ Примечания
 
-- `custom-ru` намеренно облегчён — это сделано для снижения нагрузки на устройства
-- списки не претендуют на 100% полноту, но дают лучший баланс:
-  - стабильность
-  - скорость
-  - память
+- `category-ads-all` используется в полностью развёрнутом виде, без include
+- итоговый `geosite.dat` не содержит лишних промежуточных тегов
+- списки оптимизированы для минимального потребления памяти
 - рекомендуется использовать совместно с корректной DNS-настройкой
-
----
 
 ## 📄 Лицензия
 
-Обрати внимание: данный репозиторий агрегирует данные из сторонних источников.
-
+Репозиторий агрегирует данные из сторонних источников.  
 Лицензии и условия использования смотри в исходных проектах.
