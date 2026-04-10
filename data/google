@@ -1,67 +1,478 @@
-# List of all domains being operated by Google Inc.
-include:android
-include:blogspot
-include:dart
-include:fastlane
-include:firebase
-include:flutter
-include:golang
-include:google-deepmind
-include:google-gemini
-include:google-play
-include:google-registry
-include:google-scholar
-include:google-trust-services
-include:googlefcm
-include:kaggle
-include:opensourceinsights
-include:polymer
-include:v8
-include:youtube
-
-# All .and domains
-# and (TLD application withdrawn by Google)
-
-# All .chrome domains
+android
+android.com
+androidify.com
+full:android.googlesource.com
+blogger.com
+blogblog.com
+blogspot.ae
+blogspot.al
+blogspot.am
+blogspot.ba
+blogspot.be
+blogspot.bg
+blogspot.bj
+blogspot.ca
+blogspot.cf
+blogspot.ch
+blogspot.cl
+blogspot.co.at
+blogspot.co.id
+blogspot.co.il
+blogspot.co.ke
+blogspot.co.nz
+blogspot.co.uk
+blogspot.co.za
+blogspot.com
+blogspot.com.ar
+blogspot.com.au
+blogspot.com.br
+blogspot.com.by
+blogspot.com.co
+blogspot.com.cy
+blogspot.com.ee
+blogspot.com.eg
+blogspot.com.es
+blogspot.com.mt
+blogspot.com.ng
+blogspot.com.tr
+blogspot.com.uy
+blogspot.cv
+blogspot.cz
+blogspot.de
+blogspot.dk
+blogspot.fi
+blogspot.fr
+blogspot.gr
+blogspot.hk
+blogspot.hr
+blogspot.hu
+blogspot.ie
+blogspot.in
+blogspot.is
+blogspot.it
+blogspot.jp
+blogspot.kr
+blogspot.li
+blogspot.lt
+blogspot.lu
+blogspot.md
+blogspot.mk
+blogspot.mx
+blogspot.my
+blogspot.nl
+blogspot.no
+blogspot.pe
+blogspot.pt
+blogspot.qa
+blogspot.re
+blogspot.ro
+blogspot.rs
+blogspot.ru
+blogspot.se
+blogspot.sg
+blogspot.si
+blogspot.sk
+blogspot.sn
+blogspot.td
+blogspot.tw
+blogspot.ug
+blogspot.vn
+blogger.googleusercontent.com
+dart.dev
+dartlang.org
+dartpad.dev
+fastlane.ci
+fastlane.tools
+firebase.com
+firebase.io
+firebaseapp.com
+firebaseio.com
+full:firebase-settings.crashlytics.com @cn
+full:firebase.google.com
+full:firebase.googleapis.com
+full:firebaseappcheck.googleapis.com
+full:firebasedynamiclinks-ipv4.googleapis.com
+full:firebasedynamiclinks-ipv6.googleapis.com
+full:firebasedynamiclinks.googleapis.com
+full:firebaseinappmessaging.googleapis.com
+full:firebaseinstallations.googleapis.com
+full:firebaselogging-pa.googleapis.com
+full:firebaselogging.googleapis.com
+full:firebaseperusertopics-pa.googleapis.com
+full:firebaseremoteconfig.googleapis.com
+flutter.dev
+flutterapp.com
+pub.dev
+go-lang.com
+go-lang.net
+go-lang.org
+go.dev
+godoc.org
+golang.com
+golang.net
+golang.org
+deepmind.com
+deepmind.google
+geller-pa.googleapis.com
+generativelanguage.googleapis.com
+proactivebackend-pa.googleapis.com
+robinfrontend-pa.googleapis.com
+full:ai.google.dev
+full:alkalicore-pa.clients6.google.com
+full:alkalimakersuite-pa.clients6.google.com
+full:webchannel-alkalimakersuite-pa.clients6.google.com
+generativeai.google
+makersuite.google.com
+ai.studio
+aistudio.google.com
+bard.google.com
+gemini.google
+gemini.google.com
+full:cloudaicompanion.googleapis.com
+full:cloudcode-pa.googleapis.com
+full:daily-cloudcode-pa.googleapis.com
+full:notebooklm-pa.googleapis.com
+full:notebooklm.googleapis.com
+notebooklm.google
+notebooklm.google.com
+jules.google
+jules.google.com
+labs.google
+labs.google.com
+aisandbox-pa.googleapis.com
+aida.googleapis.com
+opal.google
+opal.google.com
+full:antigravity-pa.googleapis.com
+full:antigravity.googleapis.com
+antigravity.google
+antigravity-unleash.goog
+googleplay.com
+play-fe.googleapis.com
+play-games.googleusercontent.com
+play-lh.googleusercontent.com
+play.google.com
+play.googleapis.com
+xn--ngstr-lra8j.com
+regexp:^r+[0-9]+(---|\.)sn-(2x3|ni5|j5o)\w{5}\.xn--ngstr-lra8j\.com$ @cn
+regexp:^r+[0-9]+(---|\.)sn-(2x3|ni5|j5o)\w{5}\.googlevideo\.com$ @cn
+full:redirector.c.play.google.com @cn
+charlestonroadregistry.com
+crr.com
+registry.google
+get.app
+get.dev
+get.how
+get.new
+get.page
+get.rsvp
+hey.boo
+iam.soy
+new.day
+xn--p8j9a0d9c9a.xn--q9jyb4c
+full:scholar.google.ae
+full:scholar.google.at
+full:scholar.google.be
+full:scholar.google.bg
+full:scholar.google.ca
+full:scholar.google.cat
+full:scholar.google.ch
+full:scholar.google.cl
+full:scholar.google.cn
+full:scholar.google.co.cr
+full:scholar.google.co.id
+full:scholar.google.co.il
+full:scholar.google.co.in
+full:scholar.google.co.jp
+full:scholar.google.co.kr
+full:scholar.google.co.nz
+full:scholar.google.co.th
+full:scholar.google.co.uk
+full:scholar.google.co.ve
+full:scholar.google.co.za
+full:scholar.google.com
+full:scholar.google.com.ar
+full:scholar.google.com.au
+full:scholar.google.com.bo
+full:scholar.google.com.br
+full:scholar.google.com.co
+full:scholar.google.com.cu
+full:scholar.google.com.do
+full:scholar.google.com.ec
+full:scholar.google.com.eg
+full:scholar.google.com.gt
+full:scholar.google.com.hk
+full:scholar.google.com.ly
+full:scholar.google.com.mx
+full:scholar.google.com.my
+full:scholar.google.com.ni
+full:scholar.google.com.pa
+full:scholar.google.com.pe
+full:scholar.google.com.ph
+full:scholar.google.com.pk
+full:scholar.google.com.pr
+full:scholar.google.com.py
+full:scholar.google.com.sg
+full:scholar.google.com.sv
+full:scholar.google.com.tr
+full:scholar.google.com.tw
+full:scholar.google.com.ua
+full:scholar.google.com.uy
+full:scholar.google.com.vn
+full:scholar.google.cz
+full:scholar.google.de
+full:scholar.google.dk
+full:scholar.google.es
+full:scholar.google.fi
+full:scholar.google.fr
+full:scholar.google.gr
+full:scholar.google.hn
+full:scholar.google.hr
+full:scholar.google.hu
+full:scholar.google.is
+full:scholar.google.it
+full:scholar.google.li
+full:scholar.google.lt
+full:scholar.google.lu
+full:scholar.google.lv
+full:scholar.google.nl
+full:scholar.google.no
+full:scholar.google.pl
+full:scholar.google.pt
+full:scholar.google.ro
+full:scholar.google.ru
+full:scholar.google.se
+full:scholar.google.si
+full:scholar.google.sk
+full:scholar.googleusercontent.com
+full:scholar.l.google.com
+pki.goog
+full:pki-goog.l.google.com @cn
+full:c.pki.goog @cn
+full:i.pki.goog @cn
+full:o.pki.goog @cn
+full:publicca.googleapis.com
+full:preprod-publicca.googleapis.com
+full:clients1.google.com
+full:pki.google.com
+full:crl.pki.goog @cn
+full:crls.pki.goog @cn
+full:ocsp.pki.goog @cn
+full:alt1-mtalk.google.com @!cn
+full:alt2-mtalk.google.com @!cn
+full:alt3-mtalk.google.com @!cn
+full:alt4-mtalk.google.com @!cn
+full:alt5-mtalk.google.com @!cn
+full:alt6-mtalk.google.com @!cn
+full:alt7-mtalk.google.com
+full:alt8-mtalk.google.com
+full:mtalk-dev.google.com
+full:mtalk-staging.google.com
+full:mtalk.google.com @!cn
+full:mtalk4.google.com
+kaggle.com
+kaggle.io
+kaggle.net
+kaggleusercontent.com
+deps.dev
+deps.info
+opensourceinsight.dev
+opensourceinsights.dev
+polymer-project.org
+polymerproject.org
+v8.dev
+v8project.org
+youtube
+ggpht.cn @cn
+ggpht.com
+googlevideo.com
+wide-youtube.l.google.com
+withyoutube.com
+youtu.be
+youtube-nocookie.com
+youtube-ui.l.google.com
+youtube.ae
+youtube.al
+youtube.am
+youtube.at
+youtube.az
+youtube.ba
+youtube.be
+youtube.bg
+youtube.bh
+youtube.bo
+youtube.by
+youtube.ca
+youtube.cat
+youtube.ch
+youtube.cl
+youtube.co
+youtube.co.ae
+youtube.co.at
+youtube.co.cr
+youtube.co.hu
+youtube.co.id
+youtube.co.il
+youtube.co.in
+youtube.co.jp
+youtube.co.ke
+youtube.co.kr
+youtube.co.ma
+youtube.co.nz
+youtube.co.th
+youtube.co.tz
+youtube.co.ug
+youtube.co.uk
+youtube.co.ve
+youtube.co.za
+youtube.co.zw
+youtube.com
+youtube.com.ar
+youtube.com.au
+youtube.com.az
+youtube.com.bd
+youtube.com.bh
+youtube.com.bo
+youtube.com.br
+youtube.com.by
+youtube.com.co
+youtube.com.do
+youtube.com.ec
+youtube.com.ee
+youtube.com.eg
+youtube.com.es
+youtube.com.gh
+youtube.com.gr
+youtube.com.gt
+youtube.com.hk
+youtube.com.hn
+youtube.com.hr
+youtube.com.jm
+youtube.com.jo
+youtube.com.kw
+youtube.com.lb
+youtube.com.lv
+youtube.com.ly
+youtube.com.mk
+youtube.com.mt
+youtube.com.mx
+youtube.com.my
+youtube.com.ng
+youtube.com.ni
+youtube.com.om
+youtube.com.pa
+youtube.com.pe
+youtube.com.ph
+youtube.com.pk
+youtube.com.pt
+youtube.com.py
+youtube.com.qa
+youtube.com.ro
+youtube.com.sa
+youtube.com.sg
+youtube.com.sv
+youtube.com.tn
+youtube.com.tr
+youtube.com.tw
+youtube.com.ua
+youtube.com.uy
+youtube.com.ve
+youtube.cr
+youtube.cz
+youtube.de
+youtube.dk
+youtube.ee
+youtube.es
+youtube.fi
+youtube.fr
+youtube.ge
+youtube.googleapis.com
+youtube.gr
+youtube.gt
+youtube.hk
+youtube.hr
+youtube.hu
+youtube.ie
+youtube.in
+youtube.iq
+youtube.is
+youtube.it
+youtube.jo
+youtube.jp
+youtube.kr
+youtube.kz
+youtube.la
+youtube.lk
+youtube.lt
+youtube.lu
+youtube.lv
+youtube.ly
+youtube.ma
+youtube.md
+youtube.me
+youtube.mk
+youtube.mn
+youtube.mx
+youtube.my
+youtube.ng
+youtube.ni
+youtube.nl
+youtube.no
+youtube.pa
+youtube.pe
+youtube.ph
+youtube.pk
+youtube.pl
+youtube.pr
+youtube.pt
+youtube.qa
+youtube.ro
+youtube.rs
+youtube.ru
+youtube.sa
+youtube.se
+youtube.sg
+youtube.si
+youtube.sk
+youtube.sn
+youtube.soy
+youtube.sv
+youtube.tn
+youtube.tv
+youtube.ua
+youtube.ug
+youtube.uy
+youtube.vn
+youtubeeducation.com
+youtubeembeddedplayer.googleapis.com
+youtubefanfest.com
+youtubegaming.com
+youtubego.co.id
+youtubego.co.in
+youtubego.com
+youtubego.com.br
+youtubego.id
+youtubego.in
+youtubei.googleapis.com
+youtubekids.com
+youtubemobilesupport.com
+yt.be
+ytimg.com
+full:yt3.googleusercontent.com
+ads.youtube.com @ads
 chrome
-
-# All .dclk domains
 dclk
-
-# All .gbiz domains
 gbiz
-
-# All .gle domains
 gle
-
-# All .gmail domains
 gmail
-
-# All .goo domains
 goo
-
-# All .goog domains
 goog
-
-# All .google domains
 google
-
-# All .guge domains
 guge
-
-# All .hangout domains
 hangout
-
-# All .nexus domains
 nexus
-
-# All .谷歌 domains
 xn--flw351e
-
-# All .グーグル domains
 xn--qcka1pmc
-
-# Source: https://www.google.com/supported_domains
 google.ad
 google.ae
 google.al
@@ -253,8 +664,6 @@ google.tt
 google.vg
 google.vu
 google.ws
-
-# Others
 0emm.com
 1e100.net
 1ucrs.com
@@ -528,20 +937,15 @@ womenwill.in
 womenwill.mx
 x.company
 x.team
-xn--9kr7l.com       # 古博.com
-xn--9trs65b.com     # 咕果.com
-xn--flw351e.com     # 谷歌.com
-xn--ggle-55da.com   # gооgle.com
-xn--gogl-0nd52e.com # gοoglе.com
-xn--gogl-1nd42e.com # goοglе.com
+xn--9kr7l.com
+xn--9trs65b.com
+xn--flw351e.com
+xn--ggle-55da.com
+xn--gogl-0nd52e.com
+xn--gogl-1nd42e.com
 xplr.co
 zukunftswerkstatt.de
-
-# Google safe browsing relay
-# https://www.fastly.com/press/press-releases/google-selects-Fastly-Oblivious-HTTP-Relay-for-Privacy-Sandbox/
 full:google-ohttp-relay-safebrowsing.fastly-edge.com
-
-# Ads/tracking
 2mdn-cn.net @ads
 2mdn.net @ads
 admob-cn.com @ads
@@ -594,19 +998,9 @@ pagead.l.google.com @ads
 partnerad.l.google.com @ads
 urchin.com @ads
 full:analytics.google.com @ads
-# https://github.com/AdguardTeam/FiltersRegistry/pull/1154
-# full:fundingchoicesmessages.google.com @ads
-
-# Domains and services below are available in China mainland
-# Use in config file like this: "geosite:google@cn"
 gvt1-cn.com @cn
 gvt2-cn.com @cn
 full:www.recaptcha.net @cn
-
-# The rules below are from https://github.com/felixonmars/dnsmasq-china-list/blob/master/google.china.conf
-# Revision: 1c2d107d4e7eaa0b192e08bb0beddde4aab247f6
-# Duplicates removed
-# Use in config file like this: "geosite:google@cn"
 full:265.com @cn
 full:2mdn-cn.net @cn
 full:2mdn.net @cn
