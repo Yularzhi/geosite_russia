@@ -3,9 +3,9 @@
 Кастомный `geosite.dat` для Xray / v2fly / Sing-box / Happ и других клиентов.
 
 Репозиторий автоматически собирает оптимизированный набор правил для работы в России с акцентом на:
-- стабильную работу мессенджеров
 - обход блокировок
 - корректную блокировку рекламы
+- стабильную работу популярных сервисов
 - минимальное потребление памяти
 
 ## 📦 Состав
@@ -13,18 +13,18 @@
 В итоговом `geosite.dat` доступны следующие теги:
 
 ### 🇷🇺 Основной список
-- `custom-ru` — объединённый список:
-  - antifilter
-  - refilter
+- `ru-blocked` — объединённый список:
+  - `community.antifilter.download`
+  - `gfw.txt` от Loyalsoldier
+
+### 🇷🇺 Российские ресурсы
+- `category-ru` — официальный upstream список российских доменов из `v2fly/domain-list-community`
 
 ### 🚫 Реклама
-- `category-ads-all` — официальный список из domain-list-community (полностью развёрнут, без include)
-
-### 🌐 Россия (внутренние ресурсы)
-- `ru-available-only-inside` — домены, доступные только внутри РФ (runetfreedom)
+- `category-ads-all` — официальный список рекламы из `domain-list-community`, развёрнутый в плоский вид
 
 ### 🔒 Системные
-- `private` — локальные и приватные сети (v2fly)
+- `private` — локальные и приватные сети / домены
 
 ### 📱 Сервисы
 - `telegram`
@@ -50,9 +50,9 @@
 
 Примеры тегов:
 
-- `geosite:custom-ru`
+- `geosite:ru-blocked`
+- `geosite:category-ru`
 - `geosite:category-ads-all`
-- `geosite:ru-available-only-inside`
 - `geosite:private`
 - `geosite:telegram`
 - `geosite:viber`
@@ -66,7 +66,7 @@
 ## 🎯 Рекомендации по использованию
 
 ### Proxy
-- `geosite:custom-ru`
+- `geosite:ru-blocked`
 - `geosite:telegram`
 - `geosite:viber`
 - `geosite:whatsapp`
@@ -75,7 +75,7 @@
 
 ### Direct
 - `geosite:private`
-- `geosite:ru-available-only-inside`
+- `geosite:category-ru`
 
 ### Block
 - `geosite:category-ads-all`
@@ -84,11 +84,10 @@
 
 Репозиторий автоматически:
 - скачивает исходные списки
-- очищает и нормализует `custom-ru`
-- удаляет дубликаты
+- очищает и нормализует `ru-blocked`
 - подтягивает upstream-теги
-- разворачивает все include-зависимости
-- генерирует чистый `geosite.dat` без лишних тегов
+- разворачивает зависимости
+- генерирует `geosite.dat`
 - публикует результат в ветку `release`
 
 Обновление выполняется ежедневно через GitHub Actions.
@@ -97,13 +96,10 @@
 
 ### 🇷🇺 Основной список
 - [community.antifilter.download](https://community.antifilter.download/list/domains.txt)
-- [Re-filter-lists](https://github.com/1andrevich/Re-filter-lists)
+- [Loyalsoldier/surge-rules](https://github.com/Loyalsoldier/surge-rules)
 
-### 📦 Upstream (geosite база)
+### 📦 Upstream geosite
 - [v2fly/domain-list-community](https://github.com/v2fly/domain-list-community)
-
-### 🌐 Россия (доступ только внутри)
-- [runetfreedom/russia-domains-list](https://github.com/runetfreedom/russia-domains-list)
 
 ### 📊 Производные проекты
 - [Loyalsoldier/v2ray-rules-dat](https://github.com/Loyalsoldier/v2ray-rules-dat)
@@ -116,30 +112,31 @@
 https://github.com/v2fly/domain-list-community  
 Базовый проект geosite, на котором строится вся система правил.
 
-### 🔹 runetfreedom
-https://github.com/runetfreedom/russia-domains-list  
-За списки доменов, доступных только внутри России.
-
 ### 🔹 Loyalsoldier
 https://github.com/Loyalsoldier/v2ray-rules-dat  
-За идеи и реализацию автоматической сборки.
+За идеи сборки и удобную экосистему правил.
 
-### 🔹 Re-filter
-https://github.com/1andrevich/Re-filter-lists  
-За актуальные списки доменов.
+### 🔹 Loyalsoldier surge-rules
+https://github.com/Loyalsoldier/surge-rules  
+За текстовый `gfw.txt`, который используется в сборке `ru-blocked`.
 
 ### 🔹 Antifilter
 https://community.antifilter.download  
-За поддержку списков блокировок.
+За поддержку списков доменов, используемых для обхода блокировок.
 
 ## ⚠️ Примечания
 
-- `category-ads-all` используется в полностью развёрнутом виде, без include
+- `ru-blocked` — это кастомный тег, собранный из `antifilter` и `gfw`
+- `category-ru` и сервисные теги берутся из upstream `v2fly/domain-list-community`
+- `category-ads-all` используется в развёрнутом виде
 - итоговый `geosite.dat` не содержит лишних промежуточных тегов
-- списки оптимизированы для минимального потребления памяти
-- рекомендуется использовать совместно с корректной DNS-настройкой
+- список оптимизирован под снижение потребления памяти
 
 ## 📄 Лицензия
 
 Репозиторий агрегирует данные из сторонних источников.  
 Лицензии и условия использования смотри в исходных проектах.
+
+## 💬 Обратная связь
+
+Если хочешь улучшить списки или добавить новые категории — создавай issue или pull request.
