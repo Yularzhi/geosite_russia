@@ -37,7 +37,7 @@ ROOT_TAGS = [
     "ru-available-only-inside",
 ]
 
-# Явно указываем только особые корневые теги.
+# Для корневых тегов указываем источник явно.
 # Все include-зависимости по умолчанию считаем тегами из domain-list-community.
 ROOT_TAG_SOURCE = {
     "category-ads-all": "dlc",
@@ -72,6 +72,7 @@ def normalize_text_domain(line: str) -> str | None:
     if line.startswith("#") or line.startswith("//") or line.startswith(";"):
         return None
 
+    # antifilter format: *://*.example.com/*
     line = line.replace("*://*.", "")
     line = line.replace("*://", "")
     line = line.replace("/*", "")
@@ -195,6 +196,24 @@ def rule_matches_attrs(rule_attrs: set[str], required_attrs: set[str] | None) ->
     return required_attrs.issubset(rule_attrs)
 
 
+def merge_required_attrs(
+    parent_required: set[str] | None,
+    local_attrs: set[str],
+) -> set[str] | None:
+    """
+    Логика важная:
+    - если мы уже внутри @ads-контекста, он должен сохраняться дальше
+    - если локальный include добавляет свои атрибуты, объединяем
+    """
+    if parent_required and local_attrs:
+        return set(parent_required) | set(local_attrs)
+    if parent_required:
+        return set(parent_required)
+    if local_attrs:
+        return set(local_attrs)
+    return None
+
+
 def flatten_rules(
     tag: str,
     required_attrs: set[str] | None = None,
@@ -220,7 +239,7 @@ def flatten_rules(
         kind, value, attrs = parsed
 
         if kind == "include":
-            child_required_attrs = attrs if attrs else None
+            child_required_attrs = merge_required_attrs(required_attrs, attrs)
             rules.extend(flatten_rules(value, child_required_attrs, seen))
         else:
             if rule_matches_attrs(attrs, required_attrs):
