@@ -1,0 +1,403 @@
+include:discuz
+include:dnspod
+
+acctdns.com
+acctdns.net
+aitransfy.com
+apaas-zone-test.com
+apdcdn.com
+apdcdn.net
+apigwtencent.com
+bkapigw.com
+bkapps.com
+bkclouds.cc
+bktencent.com
+build9s.io
+byodonline.com
+cdn-go.cn
+cdndoctor.com
+cdngot.com
+cdntip.com
+cdntips.com
+cdntips.net
+cdnv1.cn
+cdnv2.cn
+cdnv3.cn
+cloud-industry-delivery.site
+cloudbase.cn
+cloudbase.net
+cloudidaas.com
+cloudsite.vip
+cncqcloud.com
+computeinit.com
+coolsite.vip
+dcloudlive.com
+dcloudlive.net
+dcloudsp.com
+dcloudsp.net
+dcloudstc.com
+dcloudstc.net
+dcloudvod.com
+dcloudvod.net
+dnsv1.com
+dnsv1.com.cn
+dothework.cn
+ectencent.cn
+ectencent.com.cn
+edgeone.cool
+edgeonedy1.com
+essurl.com
+exmailgz.com
+fsphere.cn
+gaapqcloud.com
+gitdrone.cn
+gmedev.cn
+govqcloud.com
+gsadds.com
+gtm.pub
+hr-welink.com
+idcgcloudcs.com
+iemiq.com
+igtm-meeting-tencent.com
+igtm.pub
+intltencentcos.com @!cn
+isd.com
+ispqcloud.com
+itopsdk.com
+jrzk.net.cn
+my-qcloud.com
+myelasticsearch.com
+myqcloud.com
+onexmail.com
+openapp.run
+ovscdns.com
+ovscdns.net
+pn1waq.com
+qcloud-edumall.com
+qcloud.com
+qcloud.la
+qcloudapps.com
+qcloudcdn.com
+qcloudcdntest.cn
+qcloudclass.com
+qcloudcos.cn
+qcloudcos.com
+qcloudcos.com.cn
+qclouder.com
+qcloudgme.com
+qcloudimg.com
+qcloudipv6.com
+qcloudmarket.com
+qcloudns.com
+qcloudsmartiot.com
+qcloudtcic.com
+qcloudtiw.com
+qcloudtrip.com
+qcloudtt.com
+qcloudwaf.com
+qdwebim.com
+qeodns.com
+qeodns.net
+qqmra.cn
+qqmra.com
+qyunapp.com
+serverlesscloud.cn
+smtcdns.com
+smtcdns.net
+spcdntip.com
+spcdntipbak.com
+spcloudhw.com
+spcloudhw.net
+srmkp.cn
+starlakelab.com
+tapd.cn
+tcdlive.com
+tcdnhw.com
+tcdnkcbak.com
+tcdnlive.com
+tcdnlivebak1.com
+tcdnlivebak2.com
+tcdnos.com
+tcdnos.net
+tcdntip.com
+tcdnvod.com
+tcdnvodbak.com
+tcloudbase.com
+tcloudbase.net
+tcloudbaseapp.com
+tcloudbi.com
+tclouddrive.com
+tcloudedu.com
+tcloudhw.com
+tcloudhw.net
+tcloudscdn.com
+tcloudscdn.net
+tdnsstic1.cn
+tdnsx1.com
+techo.chat
+tefscloud.com
+tefscloud.net
+tenant-zone-dev.com
+tencdns.net
+tencent-cloud.com
+tencent-cloud.net
+tencentapps.com
+tencentbyod.com
+tencentcdb.cn
+tencentcdb.com
+tencentcdb.com.cn
+tencentclb.com
+tencentcloud-aiot.com
+tencentcloudapi.com
+tencentcloudclub.com
+tencentcloudcr.com
+tencentcloudmarket.com
+tencentcloudns.com
+tencentcloudsec.com
+tencentcloudses.com
+tencentcos.cn
+tencentcos.com
+tencentcos.com.cn
+tencentcs.cn
+tencentcs.com
+tencentdayu.com
+tencentdb.com
+tencentdevices.com
+tencentdigitalassistant.com
+tencentdms.com
+tencenteiam.com
+tencentelasticsearch.com
+tencentid.com
+tencentidentity.com
+tencentproxy.com
+tencentrio.com
+tencenttid.com
+tencentwemeet.club
+tencentwepark.com
+tencentyun.com
+tendbcluster.com
+tendis.net
+testjrzk.net.cn
+testmeet.cn
+testwaf.com
+tgovcloud.com
+tidaas.com
+timatrix.com.cn
+timmerse.com
+tlivecdn.com
+tlivemcdn.com
+tlivepush.com
+tlivesource.com
+tourismshow.cn
+tourismuser.cn
+tsparkling.com
+tx-exhibition.com
+txbyod.com
+txidc.wang
+txlivecdn.com
+txtyxg.com
+txyscdn.com
+txyscdn.net
+uncnn.cn
+vcloudstc.com
+vcloudstc.net
+vcloudvod.com
+vodtcbk.com
+vxo7tu.com
+wework-studio.com
+xqymuy.com
+yufuid.com
+yufuid.com.cn
+yufuid.net
+yunjitele.com
+
+# regexp:.+\.dnse[0-5]\.(cn|com)$
+dnse0.cn
+dnse1.cn
+dnse2.cn
+dnse3.cn
+dnse4.cn
+dnse5.cn
+dnse0.com
+dnse1.com
+dnse2.com
+dnse3.com
+dnse4.com
+dnse5.com
+
+# regexp:.+\.tdnsv([1-9]|1[0-5])\.(com|net)$
+tdnsv1.com
+tdnsv2.com
+tdnsv3.com
+tdnsv4.com
+tdnsv5.com
+tdnsv6.com
+tdnsv7.com
+tdnsv8.com
+tdnsv9.com
+tdnsv10.com
+tdnsv11.com
+tdnsv12.com
+tdnsv13.com
+tdnsv14.com
+tdnsv15.com
+tdnsv1.net
+tdnsv2.net
+tdnsv3.net
+tdnsv4.net
+tdnsv5.net
+tdnsv6.net
+tdnsv7.net
+tdnsv8.net
+tdnsv9.net
+tdnsv10.net
+tdnsv11.net
+tdnsv12.net
+tdnsv13.net
+tdnsv14.net
+tdnsv15.net
+
+# myqcloud inside mainland China
+# overrided by myqcloud.com
+#regexp:\.(.+-)?ap-beijing(-.+)?\.myqcloud\.com$             #北京
+#regexp:\.(.+-)?ap-nanjing(-.+)?\.myqcloud\.com$             #南京
+#regexp:\.(.+-)?ap-shanghai(-.+)?\.myqcloud\.com$            #上海
+#regexp:\.(.+-)?ap-guangzhou(-.+)?\.myqcloud\.com$           #广州
+#regexp:\.(.+-)?ap-chengdu(-.+)?\.myqcloud\.com$             #成都
+#regexp:\.(.+-)?ap-chongqing(-.+)?\.myqcloud\.com$           #重庆
+#regexp:\.(.+-)?ap-shenzhen(-.+)?\.myqcloud\.com$            #深圳
+
+# COS 使用到的非中国大陆的地域与可用区，参见 https://cloud.tencent.com/document/product/436/6224
+ap-hongkong.myqcloud.com @!cn       #中国香港
+ap-singapore.myqcloud.com @!cn      #新加坡
+ap-mumbai.myqcloud.com @!cn         #孟买
+ap-jakarta.myqcloud.com @!cn        #雅加达
+ap-seoul.myqcloud.com @!cn          #首尔
+ap-bangkok.myqcloud.com @!cn        #曼谷
+ap-tokyo.myqcloud.com @!cn          #东京
+na-siliconvalley.myqcloud.com @!cn  #硅谷（美西）
+na-ashburn.myqcloud.com @!cn        #弗吉尼亚（美东）
+na-toronto.myqcloud.com @!cn        #多伦多
+sa-saopaulo.myqcloud.com @!cn       #圣保罗
+eu-frankfurt.myqcloud.com @!cn      #法兰克福
+eu-moscow.myqcloud.com @!cn         #莫斯科
+
+# tencentcos inside mainland China
+# overrided by tencentcos.cn, tencentcos.com, tencentcos.com.cn
+#regexp:\.(.+-)?ap-beijing(-.+)?\.tencentcos\.(cn|com(\.cn)?)$   #北京
+#regexp:\.(.+-)?ap-nanjing(-.+)?\.tencentcos\.(cn|com(\.cn)?)$   #南京
+#regexp:\.(.+-)?ap-shanghai(-.+)?\.tencentcos\.(cn|com(\.cn)?)$  #上海
+#regexp:\.(.+-)?ap-guangzhou(-.+)?\.tencentcos\.(cn|com(\.cn)?)$ #广州
+#regexp:\.(.+-)?ap-chengdu(-.+)?\.tencentcos\.(cn|com(\.cn)?)$   #成都
+#regexp:\.(.+-)?ap-chongqing(-.+)?\.tencentcos\.(cn|com(\.cn)?)$ #重庆
+#regexp:\.(.+-)?ap-shenzhen(-.+)?\.tencentcos\.(cn|com(\.cn)?)$  #深圳
+
+# tencentcos outside mainland China
+# regexp:.+\.ap-hongkong\.tencentcos\.(cn|com(\.cn)?)$ @!cn       #中国香港
+ap-hongkong.tencentcos.cn @!cn
+ap-hongkong.tencentcos.com @!cn
+ap-hongkong.tencentcos.com.cn @!cn
+
+# regexp:.+\.ap-singapore\.tencentcos\.(cn|com(\.cn)?)$ @!cn      #新加坡
+ap-singapore.tencentcos.cn @!cn
+ap-singapore.tencentcos.com @!cn
+ap-singapore.tencentcos.com.cn @!cn
+
+# regexp:.+\.ap-mumbai\.tencentcos\.(cn|com(\.cn)?)$ @!cn         #孟买
+ap-mumbai.tencentcos.cn @!cn
+ap-mumbai.tencentcos.com @!cn
+ap-mumbai.tencentcos.com.cn @!cn
+
+# regexp:.+\.ap-jakarta\.tencentcos\.(cn|com(\.cn)?)$ @!cn        #雅加达
+ap-jakarta.tencentcos.cn @!cn
+ap-jakarta.tencentcos.com @!cn
+ap-jakarta.tencentcos.com.cn @!cn
+
+# regexp:.+\.ap-seoul\.tencentcos\.(cn|com(\.cn)?)$ @!cn          #首尔
+ap-seoul.tencentcos.cn @!cn
+ap-seoul.tencentcos.com @!cn
+ap-seoul.tencentcos.com.cn @!cn
+
+# regexp:.+\.ap-bangkok\.tencentcos\.(cn|com(\.cn)?)$ @!cn        #曼谷
+ap-bangkok.tencentcos.cn @!cn
+ap-bangkok.tencentcos.com @!cn
+ap-bangkok.tencentcos.com.cn @!cn
+
+# regexp:.+\.ap-tokyo\.tencentcos\.(cn|com(\.cn)?)$ @!cn          #东京
+ap-tokyo.tencentcos.cn @!cn
+ap-tokyo.tencentcos.com @!cn
+ap-tokyo.tencentcos.com.cn @!cn
+
+# regexp:.+\.na-siliconvalley\.tencentcos\.(cn|com(\.cn)?)$ @!cn  #硅谷（美西）
+na-siliconvalley.tencentcos.cn @!cn
+na-siliconvalley.tencentcos.com @!cn
+na-siliconvalley.tencentcos.com.cn @!cn
+
+# regexp:.+\.na-ashburn\.tencentcos\.(cn|com(\.cn)?)$ @!cn        #弗吉尼亚（美东）
+na-ashburn.tencentcos.cn @!cn
+na-ashburn.tencentcos.com @!cn
+na-ashburn.tencentcos.com.cn @!cn
+
+# regexp:.+\.na-toronto\.tencentcos\.(cn|com(\.cn)?)$ @!cn        #多伦多
+na-toronto.tencentcos.cn @!cn
+na-toronto.tencentcos.com @!cn
+na-toronto.tencentcos.com.cn @!cn
+
+# regexp:.+\.sa-saopaulo\.tencentcos\.(cn|com(\.cn)?)$ @!cn       #圣保罗
+sa-saopaulo.tencentcos.cn @!cn
+sa-saopaulo.tencentcos.com @!cn
+sa-saopaulo.tencentcos.com.cn @!cn
+
+# regexp:.+\.eu-frankfurt\.tencentcos\.(cn|com(\.cn)?)$ @!cn      #法兰克福
+eu-frankfurt.tencentcos.cn @!cn
+eu-frankfurt.tencentcos.com @!cn
+eu-frankfurt.tencentcos.com.cn @!cn
+
+# regexp:.+\.eu-moscow\.tencentcos\.(cn|com(\.cn)?)$ @!cn         #莫斯科
+eu-moscow.tencentcos.cn @!cn
+eu-moscow.tencentcos.com @!cn
+eu-moscow.tencentcos.com.cn @!cn
+
+# Formerly COS Download Domain
+costj.myqcloud.com                  #北京一区（华北）
+cosbj.myqcloud.com                  #北京
+cossh.myqcloud.com                  #上海（华东）
+cosgz.myqcloud.com                  #广州（华南）
+coscd.myqcloud.com                  #成都（西南）
+coshk.myqcloud.com @!cn             #中国香港
+cossgp.myqcloud.com @!cn            #新加坡
+cosca.myqcloud.com @!cn             #多伦多
+cosger.myqcloud.com @!cn            #法兰克福
+
+# Formerly COS Upload Domain
+tj.file.myqcloud.com                #北京一区（华北）
+bj.file.myqcloud.com                #北京
+sh.file.myqcloud.com                #上海（华东）
+gz.file.myqcloud.com                #广州（华南）
+cd.file.myqcloud.com                #成都（西南）
+hk.file.myqcloud.com @!cn           #中国香港
+sgp.file.myqcloud.com @!cn          #新加坡
+ca.file.myqcloud.com @!cn           #多伦多
+ger.file.myqcloud.com @!cn          #法兰克福
+
+# Oracle
+oracle-tencent.cn
+oracle-tencent.com
+oracle-tencent.com.cn
+oracle-tencent.net
+oracle-tencent.net.cn
+
+# 腾讯优码
+m1.run
+m6.run
+m9.run
+ma.run
+um.run
+ym.run
+
+# 前端性能监控
+aegis.qq.com
+tamaegis.com
+rumt-zh.com
+rumt-sg.com @!cn        #新加坡
+rumt-us.com @!cn        #硅谷

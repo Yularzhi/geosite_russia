@@ -1,5 +1,3 @@
-graph.whatsapp.com
-graph.whatsapp.net
 wa.me
 whatsapp-plus.info
 whatsapp-plus.me
@@ -11,3 +9,7 @@ whatsapp.net
 whatsapp.org
 whatsapp.tv
 whatsappbrand.com
+
+# Ads/tracking
+graph.whatsapp.com @ads
+graph.whatsapp.net @ads

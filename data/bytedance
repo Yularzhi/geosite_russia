@@ -1,0 +1,386 @@
+include:bytedance-ai-!cn # not serving for cn
+include:doubao
+include:douyin # douyin, huoshan and qishuimusic inside
+include:fqnovel
+include:juejin
+include:lark # feishu is included in lark
+include:tiktok # not serving for cn
+include:trae
+include:volcengine
+
+99uri.cn
+99uri.com
+activity-dy.com
+activity01.com
+activity02.com
+activity03.com
+activity04.com
+activity05.com
+activitybyte.com
+ali-api-test.net
+ali-gtm-01.net
+ali-gtm-pressure.com
+ali-restore.net
+arco.design
+baikevod.com
+bdactivity.com
+bdgslb.com
+bdispatch.com
+bdispatch.net
+bdns-api-test.net
+bdns-boe.com
+bdns-boe.net
+bdns-gtm-01.net
+bdns-gtm-pressure.com
+bdns-restore.net
+bdns-test.com
+bdns-test.net
+bdppe.net
+bdsagslb.com
+bdsagslbtest.com
+bdzjdsagslb.com
+betaband.net
+betadance.net
+bfcdnbf.com
+bfcdnrd.com
+bfcdnsc.com
+bvfcdn.com
+bx0byte.com
+byte-edge.com
+byte-edgeworker.com
+byte-gslb.com
+byte-test.cn
+byte-test.com
+byte-test.net
+byte00.com
+byte00.net
+byte000.com
+byte008.com
+byte7bw.net
+byteac.com
+byteacct.com
+byteacctimg.com
+byteactivity.com
+byteactivity11.com
+byteactivity12.com
+byteactivity13.com
+byteactivity14.com
+byteactivity15.com
+byteactivity16.com
+byteapi.com
+bytecdn.cn
+bytecdn.com
+bytecdn.net
+bytecdntp.com
+bytecimg.com
+byted-dast.com
+byted-edu.com
+byted-static.com
+byted-ug.com
+byted.org
+bytedance-boe.net
+bytedance.cn
+bytedance.com
+bytedance.net
+bytedance.org
+bytedanceapi.com
+bytedcdn.com
+bytedeliver.com
+bytedgames.com
+bytedns.com
+bytedns.net
+bytedns1.com
+bytedns2.com
+bytedns3.com
+bytedns4.com
+bytedns5.com
+bytedns6.com
+bytedns7.com
+bytednsdoc.com
+bytedsocial.com
+bytefae.com
+bytefast.net
+bytefcdn.com
+bytefcdnrd.com
+bytegecko.com
+bytegeckoext.com
+byteglb.com @!cn
+bytegoofy.com
+bytegqpo.net
+bytegrowth.com
+bytegslb.com
+bytehwm.com
+byteics.com
+byteics.net
+byteimg.com
+byteimgc.com
+byteintl.net
+bytelb.com
+bytelb.net
+bytelb000.net
+bytemaimg.com
+bytemastatic.com
+bytemedi.com
+bytenewst.com
+byteorg.com
+byteorge.com
+byteoversea.com @!cn
+byteoversea.net @!cn
+byteq5k.com
+byteq8u.net
+bytescm.com
+bytesslb.net
+bytetcc.com
+bytetech.info
+bytetos.com
+bytetraffic.net
+bytetstatic.com
+bytetstatic.net
+bytevalk.com
+bytevcloudapi.com
+bytevcloudvod.com
+bytexservice.com
+cdnbuild.com
+cdnbuild.net
+cdndns1.com
+cdndns2.com
+doubo03.com
+draftstatic.com
+druid.vip
+fedlearner.net
+feelgood.cn
+gslbdns.com
+gslbdns.net
+huaxiong.com
+hypercachenet.com
+ibytedapm.com
+ibytedtos.com @!cn
+ibyteimg.com @!cn
+icphoto.cn
+iluckysf.net
+itmanager.club
+itoutiaoliving.com
+jokecommunity.cn
+jokecommunity.com
+jokecommunity.net
+jstti.com
+jtamac.com
+livecdnstatic.com
+local-ip.online
+luckysf.net
+modernjs.cn
+myimis.com
+ndcpp.com
+neihancommunity.cn
+neihancommunity.com
+neihancommunity.net
+neyetwatcher.com
+oortgslb.com
+openbcs.com
+openve.cn
+originalimg.com
+originalstatic.com
+originalvod.com
+pacmantwo.com
+pstatp.com
+qingfuwucdn.net
+qualitycloud.top
+samasty.com
+searchstatic.com
+searchtoutiaolive.com
+shidianguji.com
+sinf-test.net
+sinf.net
+sinflb.net
+snssdk.com
+tekkenthree.com
+tetrisone.com
+tiapi.cn
+tiapi.net
+tlbapm.com
+toscdn.com
+toutiao11.com
+toutiao12.com
+toutiao13.com
+toutiao14.com
+toutiao15.com
+toutiaocdn.cn
+toutiaocdn.net
+toutiaocloud.cn
+toutiaojisu.com
+toutiaolite.com
+toutiaolite1.com
+toutiaolite2.com
+toutiaoliving.com
+toutiaopic.com
+toutiaowap.cn
+toutiaowap.com
+toutiaowap.net
+tr-test-ali.net
+tr-test.net
+tr-testboe.net
+ttbyte.cn
+ttbyte.com
+ttbyte.net
+ttjisu.com
+ttwebview.com
+ugshare-img.com
+vcloud-byte.com
+vcloudapi.com
+vestack-beta.com
+vestack-cicd.com
+vestack-preview.com
+vestack-sandbox.com
+vfcdnrd.com
+volcanicengine.com
+volcdns-test.com
+volcdns-test.net
+voleai.com
+wtturl.cn
+xsgtvacct.com
+zijieapi.cn
+zijieapi.com
+zijieapi.net
+zijiecdn.cn
+zijiecdn.com
+zijiecdn.net
+zijiedj.com
+zijieimg.cn
+zijieimg.com
+zijieimg.net
+zijietiaodong.com
+zijieurl.cn
+zijieurl.com
+zijieurl.net
+zijiewap.cn
+zijiewap.com
+zijiewap.net
+zilrms.com
+ziyrta.com
+zjbyte.cn
+zjbyte.com
+zjbyte.net
+zjcdn.com
+zjfcdn.com
+zjgslb.com
+
+full:bytedance.map.fastly.net @!cn
+
+# 今日头条
+toutiao.com
+toutiaoapi.com
+toutiaocdn.com
+toutiaocloud.com
+toutiaocloud.net
+toutiaohao.com
+toutiaohao.net
+toutiaoimg.cn
+toutiaoimg.com
+toutiaoimg.net
+toutiaopage.com
+toutiaostatic.com
+toutiaovod.com
+
+# 西瓜视频
+bdxiguaimg.com
+bdxigualive.com
+bdxiguastatic.com
+bdxiguavod.com
+ibdxiguaimg.com
+ibdxigualive.com
+ibdxiguastatic.com
+ibdxiguavod.com
+ixgvideo.com
+ixigua.com
+ixiguavideo.com
+xiguaapp.cn
+xiguaapp.com
+xiguashipin.cn
+xiguashipin.net
+xiguavideo.cn
+xiguavideo.net
+
+# 快懂百科
+baike.com
+
+# 悟空问答
+wukong.com
+wukongwenda.cn
+wukongwenda.com
+
+# 懂车帝
+include:dongchedi
+
+# 阳关宽频网
+365yg.com
+
+# GoGoKid
+gogokid.com.cn
+gogokid.com
+
+# 皮皮虾
+hapierxia.com
+hapipixia.com
+hapiyixia.com
+kuailepipixia.com
+pipix.com
+pipixiaha.com
+piyipiba.com
+ppxhhh.com
+ppximg.com
+ppxstatic.com
+ppxvod.com
+xiaoxiaapi.com
+
+# 上海格物致品
+douyinec.com
+ecombdapi.com
+ecombdstatic.com
+jinritemai.com
+
+# faceu
+faceu.com
+
+# 轻颜相机
+ulikecam.com
+
+# RsProxy 镜像
+rsproxy.cn
+
+# 半次元 (dead)
+# 沪ICP备2021005742号
+#bcy.net
+#bcyevent.net
+#bcyimg.com
+#bcylove.net
+#bcysnssdk.com
+#bcystatic.com
+#bcyvod.com
+
+# Ads/tracking
+ad.toutiao.com @ads
+bds.snssdk.com @ads
+byteadverts.com @ads
+ctobsnssdk.com @ads
+dig.bdurl.net @ads
+extlog.snssdk.com @ads
+i.snssdk.com @ads
+log.zijieapi.com @ads
+mcs.snssdk.com @ads
+pangolin-dsp-toutiao-b.com @ads
+pangolin-dsp-toutiao.com @ads
+pangolin-hl.snssdk.com @ads
+pangolin-lf.snssdk.com @ads
+pangolin-lq.snssdk.com @ads
+pangolin-sdk-toutiao-b.com @ads
+pangolin-sdk-toutiao.com @ads
+pangolin-sdk-toutiao1.com @ads
+pangolin.snssdk.com @ads
+panplayable-toutiao-b.com @ads
+panplayable-toutiao.com @ads
+pglstatp-sdk-toutiao.com @ads
+pglstatp-snssdk-toutiao.com @ads
+pglstatp-toutiao-b.com @ads
+pglstatp-toutiao.com @ads
+sf3-ttcdn-tos.pstatp.com @ads
+shoppingads.cn @ads
