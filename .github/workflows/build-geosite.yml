@@ -12,7 +12,7 @@ jobs:
       contents: write
 
     steps:
-      - name: Checkout this repo
+      - name: Checkout main
         uses: actions/checkout@v4
 
       - name: Set up Python
@@ -34,22 +34,41 @@ jobs:
       - name: Clone domain-list-community
         run: git clone https://github.com/v2fly/domain-list-community.git dlc
 
-      - name: Build dat
+      - name: Build geosite.dat
         run: |
           cd dlc
           go mod download
           go run ./ --datapath=../data
           mv dlc.dat ../geosite.dat
 
-      - name: Create checksums
+      - name: Create checksum
         run: sha256sum geosite.dat > geosite.dat.sha256
 
-      - name: Commit generated text lists
+      - name: Commit generated data to main
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
           git add data
-          git diff --cached --quiet || git commit -m "Update source lists"
+          git diff --cached --quiet || git commit -m "chore: update generated source lists"
+          git push
+
+      - name: Checkout release branch
+        uses: actions/checkout@v4
+        with:
+          ref: release
+          path: release-branch
+
+      - name: Replace release branch contents
+        run: |
+          find release-branch -mindepth 1 -maxdepth 1 ! -name '.git' -exec rm -rf {} +
+          cp geosite.dat release-branch/geosite.dat
+          cp geosite.dat.sha256 release-branch/geosite.dat.sha256
+
+          cd release-branch
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add geosite.dat geosite.dat.sha256
+          git commit -m "chore: publish latest geosite.dat" || echo "No changes to commit"
           git push
 
       - name: Upload artifact
