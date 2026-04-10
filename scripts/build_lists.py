@@ -22,7 +22,7 @@ TEXT_SOURCES = {
     ],
 }
 
-# Корневые теги, которые должны попасть в итоговый geosite.dat
+# Только эти теги должны попасть в итоговый geosite.dat как отдельные секции
 ROOT_TAGS = [
     "category-ads-all",
     "telegram",
@@ -37,6 +37,8 @@ ROOT_TAGS = [
     "ru-available-only-inside",
 ]
 
+# Явно указываем только особые корневые теги.
+# Все include-зависимости по умолчанию считаем тегами из domain-list-community.
 ROOT_TAG_SOURCE = {
     "category-ads-all": "dlc",
     "telegram": "dlc",
@@ -70,7 +72,6 @@ def normalize_text_domain(line: str) -> str | None:
     if line.startswith("#") or line.startswith("//") or line.startswith(";"):
         return None
 
-    # antifilter format: *://*.example.com/*
     line = line.replace("*://*.", "")
     line = line.replace("*://", "")
     line = line.replace("/*", "")
@@ -142,65 +143,106 @@ def strip_inline_comment(line: str) -> str:
     return line.strip()
 
 
-def normalize_rule_line(line: str) -> tuple[str, str] | None:
+def split_attrs(line: str) -> tuple[str, set[str]]:
+    """
+    'include:google @ads @cn' -> ('include:google', {'ads', 'cn'})
+    'google.com @ads'         -> ('google.com', {'ads'})
+    'google.com'              -> ('google.com', set())
+    """
+    parts = line.split()
+    if not parts:
+        return "", set()
+
+    base_parts = []
+    attrs = set()
+
+    for part in parts:
+        if part.startswith("@"):
+            attrs.add(part[1:])
+        else:
+            base_parts.append(part)
+
+    return " ".join(base_parts).strip(), attrs
+
+
+def parse_upstream_line(line: str) -> tuple[str, str, set[str]] | None:
     """
     Возвращает:
-    - ("include", "tag")
-    - ("rule", "raw rule as-is")
+    - ("include", "child-tag", {"ads"})
+    - ("rule", "raw rule line without attrs", {"ads"})
     - None
-
-    Правила оставляем как есть, только убираем комментарии и пустые строки.
     """
     line = strip_inline_comment(line)
     if not line:
         return None
 
-    if line.startswith("include:"):
-        child = line.split(":", 1)[1].strip()
-        # include:acfun @ads -> acfun
-        child = child.split()[0] if child else ""
-        if child:
-            return ("include", child)
+    base, attrs = split_attrs(line)
+    if not base:
         return None
 
-    return ("rule", line)
+    if base.startswith("include:"):
+        child = base.split(":", 1)[1].strip()
+        if child:
+            return ("include", child, attrs)
+        return None
+
+    return ("rule", base, attrs)
 
 
-def flatten_rules(tag: str, seen: set[str] | None = None) -> list[str]:
+def rule_matches_attrs(rule_attrs: set[str], required_attrs: set[str] | None) -> bool:
+    if not required_attrs:
+        return True
+    return required_attrs.issubset(rule_attrs)
+
+
+def flatten_rules(
+    tag: str,
+    required_attrs: set[str] | None = None,
+    seen: set[tuple[str, tuple[str, ...]]] | None = None,
+) -> list[str]:
     if seen is None:
         seen = set()
 
-    if tag in seen:
+    seen_key = (tag, tuple(sorted(required_attrs or set())))
+    if seen_key in seen:
         return []
 
-    seen.add(tag)
+    seen.add(seen_key)
 
     text = fetch_text(get_tag_url(tag))
     rules: list[str] = []
 
     for raw_line in text.splitlines():
-        parsed = normalize_rule_line(raw_line)
+        parsed = parse_upstream_line(raw_line)
         if not parsed:
             continue
 
-        kind, value = parsed
+        kind, value, attrs = parsed
+
         if kind == "include":
-            rules.extend(flatten_rules(value, seen))
+            child_required_attrs = attrs if attrs else None
+            rules.extend(flatten_rules(value, child_required_attrs, seen))
         else:
-            rules.append(value)
+            if rule_matches_attrs(attrs, required_attrs):
+                rules.append(value)
 
     return rules
 
 
-def dedupe_and_sort_rules(rules: list[str]) -> list[str]:
-    unique = {rule.strip() for rule in rules if rule.strip()}
-    return sorted(unique)
+def dedupe_keep_order(items: list[str]) -> list[str]:
+    seen = set()
+    result = []
+    for item in items:
+        if item not in seen:
+            seen.add(item)
+            result.append(item)
+    return result
 
 
 def build_flat_root_tags() -> None:
     for tag in ROOT_TAGS:
         rules = flatten_rules(tag)
-        rules = dedupe_and_sort_rules(rules)
+        rules = dedupe_keep_order(rules)
         write_tag(tag, rules)
 
 
