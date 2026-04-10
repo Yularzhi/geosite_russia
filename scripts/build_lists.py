@@ -13,7 +13,7 @@ SESSION.headers.update({"User-Agent": "custom-geosite-builder/1.0"})
 DOMAIN_RE = re.compile(r"^(?:[a-z0-9-]+\.)+[a-z]{2,63}$")
 
 DLC_BASE = "https://raw.githubusercontent.com/v2fly/domain-list-community/master/data/"
-PROXY_URL = "https://raw.githubusercontent.com/Loyalsoldier/surge-rules/release/proxy.txt"
+GFW_URL = "https://raw.githubusercontent.com/Loyalsoldier/surge-rules/release/gfw.txt"
 
 TEXT_SOURCES = {
     "ru-blocked": [
@@ -250,8 +250,8 @@ def build_ru_blocked() -> None:
             if domain:
                 domains.add(domain)
 
-    # proxy.txt from Loyalsoldier
-    for line in fetch_lines(PROXY_URL):
+    # gfw from Loyalsoldier surge-rules
+    for line in fetch_lines(GFW_URL):
         domain = normalize_text_domain(line)
         if domain:
             domains.add(domain)
