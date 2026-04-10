@@ -48,7 +48,7 @@ ROOT_TAG_SOURCE = {
     "private": "dlc",
 }
 
-GFW_URL = "https://raw.githubusercontent.com/Loyalsoldier/surge-rules/release/gfw.txt"
+PROXY_URL = "https://raw.githubusercontent.com/Loyalsoldier/surge-rules/release/proxy.txt"
 
 
 def fetch_text(url: str) -> str:
@@ -222,20 +222,9 @@ def build_ru_blocked():
             if domain:
                 domains.add(domain)
 
-    # gfw
-    for raw_line in fetch_lines(GFW_URL):
-        parsed = parse_upstream_line(raw_line)
-        if not parsed:
-            continue
-
-        kind, value, _ = parsed
-        if kind != "rule":
-            continue
-
-        if value.startswith(("full:", "keyword:", "regexp:", "domain:")):
-            continue
-
-        domain = normalize_text_domain(value)
+    # proxy list
+    for line in fetch_lines(PROXY_URL):
+        domain = normalize_text_domain(line)
         if domain:
             domains.add(domain)
 
