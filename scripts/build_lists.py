@@ -49,6 +49,32 @@ ROOT_TAG_SOURCE = {
     "private": "dlc",
 }
 
+# Явно российские домены/суффиксы, которые не должны попадать в ru-blocked
+RU_EXCLUDED_SUFFIXES = {
+    "vk.ru",
+    "vk.com",
+    "vkvideo.ru",
+    "vkuser.net",
+    "vkuservideo.net",
+    "mycdn.me",
+    "mail.ru",
+    "inbox.ru",
+    "list.ru",
+    "bk.ru",
+    "ok.ru",
+    "odnoklassniki.ru",
+    "yandex.ru",
+    "yandex.net",
+    "ya.ru",
+    "dzen.ru",
+    "rutube.ru",
+    "rambler.ru",
+    "kinoafisha.info",
+    "cdn-vk.ru",
+}
+
+RU_TLDS = (".ru", ".su", ".xn--p1ai")
+
 
 def fetch_text(url: str) -> str:
     resp = SESSION.get(url, timeout=90)
@@ -135,12 +161,6 @@ def split_attrs(line: str) -> tuple[str, set[str]]:
 
 
 def parse_upstream_line(line: str) -> tuple[str, str, set[str]] | None:
-    """
-    Возвращает:
-    - ("include", "child-tag", {"ads"})
-    - ("rule", "raw rule line without attrs", {"ads"})
-    - None
-    """
     line = strip_inline_comment(line)
     if not line:
         return None
@@ -231,10 +251,6 @@ def dedupe_keep_order(items: list[str]) -> list[str]:
 
 
 def extract_plain_domains_from_rules(rules: list[str]) -> set[str]:
-    """
-    Берем только обычные доменные строки.
-    full:/keyword:/regexp:/domain: и прочие спец-правила не участвуют в вычитании.
-    """
     result: set[str] = set()
 
     for rule in rules:
@@ -251,6 +267,17 @@ def extract_plain_domains_from_rules(rules: list[str]) -> set[str]:
     return result
 
 
+def is_ru_excluded_domain(domain: str) -> bool:
+    for suffix in RU_EXCLUDED_SUFFIXES:
+        if domain == suffix or domain.endswith("." + suffix):
+            return True
+
+    if domain.endswith(RU_TLDS):
+        return True
+
+    return False
+
+
 def build_ru_blocked() -> None:
     domains: set[str] = set()
 
@@ -265,12 +292,14 @@ def build_ru_blocked() -> None:
     category_ru_rules = flatten_rules("category-ru")
     category_ru_domains = extract_plain_domains_from_rules(category_ru_rules)
 
-    # proxy.txt minus category-ru
+    # proxy.txt minus category-ru and minus explicit RU exclusions
     for line in fetch_lines(PROXY_URL):
         domain = normalize_text_domain(line)
         if not domain:
             continue
         if domain in category_ru_domains:
+            continue
+        if is_ru_excluded_domain(domain):
             continue
         domains.add(domain)
 
