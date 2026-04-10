@@ -8,15 +8,11 @@ DATA_DIR = ROOT / "data"
 DATA_DIR.mkdir(parents=True, exist_ok=True)
 
 SESSION = requests.Session()
-SESSION.headers.update(
-    {
-        "User-Agent": "custom-geosite-builder/1.0",
-    }
-)
+SESSION.headers.update({"User-Agent": "custom-geosite-builder/1.0"})
 
 DOMAIN_RE = re.compile(r"^(?:[a-z0-9-]+\.)+[a-z]{2,63}$")
+DLC_BASE = "https://raw.githubusercontent.com/v2fly/domain-list-community/master/data/"
 
-# Источники для custom-ru
 TEXT_SOURCES = {
     "custom-ru": [
         "https://community.antifilter.download/list/domains.txt",
@@ -24,20 +20,17 @@ TEXT_SOURCES = {
     ],
 }
 
-# Какие upstream-файлы из domain-list-community нужно просто копировать как есть
-RAW_DLC_TAGS = {
-    "category-ads-all": "category-ads-all",
-    "telegram": "telegram",
-    "viber": "viber",
-    "whatsapp": "whatsapp",
-    "meta": "meta",
-    "facebook": "facebook",
-    "google": "google",
-    "supercell": "supercell",
-    "roblox": "roblox",
-}
-
-DLC_BASE = "https://raw.githubusercontent.com/v2fly/domain-list-community/master/data/"
+ROOT_DLC_TAGS = [
+    "category-ads-all",
+    "telegram",
+    "viber",
+    "whatsapp",
+    "meta",
+    "facebook",
+    "google",
+    "supercell",
+    "roblox",
+]
 
 
 def fetch_text(url: str) -> str:
@@ -51,11 +44,6 @@ def fetch_lines(url: str) -> list[str]:
 
 
 def normalize_text_domain(line: str) -> str | None:
-    """
-    Нормализация обычных текстовых списков:
-    - community.antifilter.download
-    - Re-filter-lists
-    """
     line = line.strip().lower()
 
     if not line:
@@ -63,7 +51,6 @@ def normalize_text_domain(line: str) -> str | None:
     if line.startswith("#") or line.startswith("//") or line.startswith(";"):
         return None
 
-    # antifilter format: *://*.example.com/*
     line = line.replace("*://*.", "")
     line = line.replace("*://", "")
     line = line.replace("/*", "")
@@ -88,28 +75,23 @@ def normalize_text_domain(line: str) -> str | None:
         if port.isdigit():
             line = host
 
-    if not line:
-        return None
-    if "_" in line:
-        return None
-    if line.endswith(".local"):
+    if not line or "_" in line or line.endswith(".local"):
         return None
 
     return line if DOMAIN_RE.match(line) else None
 
 
 def write_tag(tag: str, content: str) -> None:
-    target = DATA_DIR / tag
+    path = DATA_DIR / tag
     if not content.endswith("\n"):
         content += "\n"
-    target.write_text(content, encoding="utf-8")
+    path.write_text(content, encoding="utf-8")
 
 
 def cleanup_data_dir() -> None:
-    if DATA_DIR.exists():
-        for item in DATA_DIR.iterdir():
-            if item.is_file():
-                item.unlink()
+    for item in DATA_DIR.iterdir():
+        if item.is_file():
+            item.unlink()
 
 
 def build_custom_ru() -> None:
@@ -121,21 +103,65 @@ def build_custom_ru() -> None:
             if domain:
                 domains.add(domain)
 
-    content = "\n".join(sorted(domains)) + "\n"
-    write_tag("custom-ru", content)
+    write_tag("custom-ru", "\n".join(sorted(domains)) + "\n")
 
 
-def build_raw_dlc_tags() -> None:
-    for output_tag, source_tag in RAW_DLC_TAGS.items():
-        url = DLC_BASE + source_tag
-        content = fetch_text(url)
-        write_tag(output_tag, content)
+def extract_includes(text: str) -> set[str]:
+    includes: set[str] = set()
+
+    for raw_line in text.splitlines():
+        line = raw_line.strip()
+        if not line or line.startswith("#"):
+            continue
+
+        # убираем inline комментарий
+        if "#" in line:
+            line = line.split("#", 1)[0].strip()
+
+        if not line:
+            continue
+
+        # domain-list-community часто хранит много токенов в одной строке
+        for token in line.split():
+            if token.startswith("include:"):
+                child = token.split(":", 1)[1].strip()
+                if child:
+                    includes.add(child)
+
+    return includes
+
+
+def fetch_dlc_with_dependencies(root_tags: list[str]) -> dict[str, str]:
+    result: dict[str, str] = {}
+    queue = list(root_tags)
+    seen: set[str] = set()
+
+    while queue:
+        tag = queue.pop(0)
+        if tag in seen:
+            continue
+        seen.add(tag)
+
+        text = fetch_text(DLC_BASE + tag)
+        result[tag] = text
+
+        for child in sorted(extract_includes(text)):
+            if child not in seen:
+                queue.append(child)
+
+    return result
+
+
+def build_dlc_tags() -> None:
+    dlc_files = fetch_dlc_with_dependencies(ROOT_DLC_TAGS)
+    for tag, content in dlc_files.items():
+        write_tag(tag, content)
 
 
 def main() -> None:
     cleanup_data_dir()
     build_custom_ru()
-    build_raw_dlc_tags()
+    build_dlc_tags()
 
     print("Done. Generated tags:")
     for file in sorted(DATA_DIR.iterdir()):
