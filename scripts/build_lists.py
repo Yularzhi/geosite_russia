@@ -13,6 +13,7 @@ SESSION.headers.update({"User-Agent": "custom-geosite-builder/1.0"})
 DOMAIN_RE = re.compile(r"^(?:[a-z0-9-]+\.)+[a-z]{2,63}$")
 
 DLC_BASE = "https://raw.githubusercontent.com/v2fly/domain-list-community/master/data/"
+PROXY_URL = "https://raw.githubusercontent.com/Loyalsoldier/surge-rules/release/proxy.txt"
 
 TEXT_SOURCES = {
     "ru-blocked": [
@@ -20,6 +21,7 @@ TEXT_SOURCES = {
     ],
 }
 
+# Только эти теги должны попасть в итоговый geosite.dat как отдельные секции
 ROOT_TAGS = [
     "category-ads-all",
     "category-ru",
@@ -34,6 +36,7 @@ ROOT_TAGS = [
     "private",
 ]
 
+# Все эти теги берем из v2fly/domain-list-community
 ROOT_TAG_SOURCE = {
     "category-ads-all": "dlc",
     "category-ru": "dlc",
@@ -47,8 +50,6 @@ ROOT_TAG_SOURCE = {
     "roblox": "dlc",
     "private": "dlc",
 }
-
-PROXY_URL = "https://raw.githubusercontent.com/Loyalsoldier/surge-rules/release/proxy.txt"
 
 
 def fetch_text(url: str) -> str:
@@ -69,6 +70,7 @@ def normalize_text_domain(line: str) -> str | None:
     if line.startswith("#") or line.startswith("//") or line.startswith(";"):
         return None
 
+    # antifilter format: *://*.example.com/*
     line = line.replace("*://*.", "")
     line = line.replace("*://", "")
     line = line.replace("/*", "")
@@ -118,6 +120,11 @@ def strip_inline_comment(line: str) -> str:
 
 
 def split_attrs(line: str) -> tuple[str, set[str]]:
+    """
+    'include:google @ads @cn' -> ('include:google', {'ads', 'cn'})
+    'google.com @ads'         -> ('google.com', {'ads'})
+    'google.com'              -> ('google.com', set())
+    """
     parts = line.split()
     if not parts:
         return "", set()
@@ -135,6 +142,12 @@ def split_attrs(line: str) -> tuple[str, set[str]]:
 
 
 def parse_upstream_line(line: str) -> tuple[str, str, set[str]] | None:
+    """
+    Возвращает:
+    - ("include", "child-tag", {"ads"})
+    - ("rule", "raw rule line without attrs", {"ads"})
+    - None
+    """
     line = strip_inline_comment(line)
     if not line:
         return None
@@ -158,7 +171,13 @@ def rule_matches_attrs(rule_attrs: set[str], required_attrs: set[str] | None) ->
     return required_attrs.issubset(rule_attrs)
 
 
-def merge_required_attrs(parent_required, local_attrs):
+def merge_required_attrs(
+    parent_required: set[str] | None,
+    local_attrs: set[str],
+) -> set[str] | None:
+    """
+    Если мы уже внутри @ads-контекста, он должен сохраняться дальше.
+    """
     if parent_required and local_attrs:
         return set(parent_required) | set(local_attrs)
     if parent_required:
@@ -169,21 +188,30 @@ def merge_required_attrs(parent_required, local_attrs):
 
 
 def get_tag_url(tag: str) -> str:
-    return DLC_BASE + tag
+    source = ROOT_TAG_SOURCE.get(tag, "dlc")
+
+    if source == "dlc":
+        return DLC_BASE + tag
+
+    raise ValueError(f"Unknown source for tag: {tag}")
 
 
-def flatten_rules(tag: str, required_attrs=None, seen=None) -> list[str]:
+def flatten_rules(
+    tag: str,
+    required_attrs: set[str] | None = None,
+    seen: set[tuple[str, tuple[str, ...]]] | None = None,
+) -> list[str]:
     if seen is None:
         seen = set()
 
-    key = (tag, tuple(sorted(required_attrs or [])))
-    if key in seen:
+    seen_key = (tag, tuple(sorted(required_attrs or set())))
+    if seen_key in seen:
         return []
 
-    seen.add(key)
+    seen.add(seen_key)
 
     text = fetch_text(get_tag_url(tag))
-    rules = []
+    rules: list[str] = []
 
     for raw_line in text.splitlines():
         parsed = parse_upstream_line(raw_line)
@@ -193,8 +221,8 @@ def flatten_rules(tag: str, required_attrs=None, seen=None) -> list[str]:
         kind, value, attrs = parsed
 
         if kind == "include":
-            child_required = merge_required_attrs(required_attrs, attrs)
-            rules.extend(flatten_rules(value, child_required, seen))
+            child_required_attrs = merge_required_attrs(required_attrs, attrs)
+            rules.extend(flatten_rules(value, child_required_attrs, seen))
         else:
             if rule_matches_attrs(attrs, required_attrs):
                 rules.append(value)
@@ -212,7 +240,7 @@ def dedupe_keep_order(items: list[str]) -> list[str]:
     return result
 
 
-def build_ru_blocked():
+def build_ru_blocked() -> None:
     domains = set()
 
     # antifilter
@@ -222,7 +250,7 @@ def build_ru_blocked():
             if domain:
                 domains.add(domain)
 
-    # proxy list
+    # proxy.txt from Loyalsoldier
     for line in fetch_lines(PROXY_URL):
         domain = normalize_text_domain(line)
         if domain:
@@ -231,19 +259,24 @@ def build_ru_blocked():
     write_tag("ru-blocked", sorted(domains))
 
 
-def build_flat_root_tags():
+def build_flat_root_tags() -> None:
     for tag in ROOT_TAGS:
         print(f"Building tag: {tag}")
-        rules = flatten_rules(tag)
+
+        if tag == "viber":
+            rules = flatten_rules("viber")
+            rules.extend(flatten_rules("rakuten"))
+        else:
+            rules = flatten_rules(tag)
+
         rules = dedupe_keep_order(rules)
         write_tag(tag, rules)
 
 
-def main():
+def main() -> None:
     cleanup_data_dir()
     build_ru_blocked()
     build_flat_root_tags()
-
     print("Done.")
 
 
