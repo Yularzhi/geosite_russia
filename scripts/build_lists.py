@@ -158,6 +158,8 @@ def parse_upstream_line(line: str) -> tuple[str, str] | None:
 
     if line.startswith("include:"):
         child = line.split(":", 1)[1].strip()
+        # include:acfun @ads  -> acfun
+        child = child.split()[0] if child else ""
         if child:
             return ("include", child)
         return None
