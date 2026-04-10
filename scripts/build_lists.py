@@ -22,7 +22,7 @@ TEXT_SOURCES = {
     ],
 }
 
-# Только эти теги должны попасть в итоговый geosite.dat как отдельные секции
+# Корневые теги, которые должны попасть в итоговый geosite.dat
 ROOT_TAGS = [
     "category-ads-all",
     "telegram",
@@ -37,8 +37,6 @@ ROOT_TAGS = [
     "ru-available-only-inside",
 ]
 
-# Явно указываем только особые корневые теги.
-# Все include-зависимости по умолчанию считаем тегами из domain-list-community.
 ROOT_TAG_SOURCE = {
     "category-ads-all": "dlc",
     "telegram": "dlc",
@@ -103,10 +101,9 @@ def normalize_text_domain(line: str) -> str | None:
     return line if DOMAIN_RE.match(line) else None
 
 
-def write_tag(tag: str, content: str) -> None:
+def write_tag(tag: str, lines: list[str]) -> None:
     path = DATA_DIR / tag
-    if not content.endswith("\n"):
-        content += "\n"
+    content = "\n".join(lines).strip() + "\n"
     path.write_text(content, encoding="utf-8")
 
 
@@ -125,7 +122,7 @@ def build_custom_ru() -> None:
             if domain:
                 domains.add(domain)
 
-    write_tag("custom-ru", "\n".join(sorted(domains)) + "\n")
+    write_tag("custom-ru", sorted(domains))
 
 
 def get_tag_url(tag: str) -> str:
@@ -145,12 +142,14 @@ def strip_inline_comment(line: str) -> str:
     return line.strip()
 
 
-def parse_upstream_line(line: str) -> tuple[str, str] | None:
+def normalize_rule_line(line: str) -> tuple[str, str] | None:
     """
     Возвращает:
-    - ("include", "child-tag")
-    - ("rule", "raw rule line")
+    - ("include", "tag")
+    - ("rule", "raw rule as-is")
     - None
+
+    Правила оставляем как есть, только убираем комментарии и пустые строки.
     """
     line = strip_inline_comment(line)
     if not line:
@@ -158,22 +157,16 @@ def parse_upstream_line(line: str) -> tuple[str, str] | None:
 
     if line.startswith("include:"):
         child = line.split(":", 1)[1].strip()
-        # include:acfun @ads  -> acfun
+        # include:acfun @ads -> acfun
         child = child.split()[0] if child else ""
         if child:
             return ("include", child)
         return None
 
-    # Сохраняем правило как есть:
-    # domain
-    # full:domain
-    # keyword:...
-    # regexp:...
-    # domain @attr
     return ("rule", line)
 
 
-def flatten_tag(tag: str, seen: set[str] | None = None) -> list[str]:
+def flatten_rules(tag: str, seen: set[str] | None = None) -> list[str]:
     if seen is None:
         seen = set()
 
@@ -186,41 +179,35 @@ def flatten_tag(tag: str, seen: set[str] | None = None) -> list[str]:
     rules: list[str] = []
 
     for raw_line in text.splitlines():
-        parsed = parse_upstream_line(raw_line)
+        parsed = normalize_rule_line(raw_line)
         if not parsed:
             continue
 
         kind, value = parsed
-
         if kind == "include":
-            rules.extend(flatten_tag(value, seen))
+            rules.extend(flatten_rules(value, seen))
         else:
             rules.append(value)
 
     return rules
 
 
-def dedupe_keep_order(items: list[str]) -> list[str]:
-    seen = set()
-    result = []
-    for item in items:
-        if item not in seen:
-            seen.add(item)
-            result.append(item)
-    return result
+def dedupe_and_sort_rules(rules: list[str]) -> list[str]:
+    unique = {rule.strip() for rule in rules if rule.strip()}
+    return sorted(unique)
 
 
-def build_flattened_root_tags() -> None:
+def build_flat_root_tags() -> None:
     for tag in ROOT_TAGS:
-        rules = flatten_tag(tag)
-        rules = dedupe_keep_order(rules)
-        write_tag(tag, "\n".join(rules) + "\n")
+        rules = flatten_rules(tag)
+        rules = dedupe_and_sort_rules(rules)
+        write_tag(tag, rules)
 
 
 def main() -> None:
     cleanup_data_dir()
     build_custom_ru()
-    build_flattened_root_tags()
+    build_flat_root_tags()
 
     print("Done. Generated tags:")
     for file in sorted(DATA_DIR.iterdir()):
