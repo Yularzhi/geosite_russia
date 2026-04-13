@@ -283,6 +283,7 @@ partnerad.l.google.com
 urchin.com
 full:analytics.google.com
 full:sentry.hetzner.company
+domain:dt.dbankcloud.ru
 click.hunantv.com
 da.hunantv.com
 da.mgtv.com
@@ -344,8 +345,9 @@ domain:api-ru.mindbox.cloud
 domain:api-staging.mindbox.ru
 domain:api.mindbox.cloud
 domain:api.mindbox.ru
-domain:api.e.mindbox.ru
-domain:api.s.mindbox.ru
+domain:e.mindbox.ru
+domain:g.mindbox.ru
+domain:s.mindbox.ru
 domain:sentry.mindbox.ru
 domain:sentry.popmechanic.ru
 a.youdao.com
@@ -399,10 +401,12 @@ s.360.cn
 s.so.360.cn
 s.union.360.cn
 samsungads.com
+neon.click
 sbermarketing.ru
-domain:ads.neon.click
+domain:ads.sber.ru
 domain:clickstream.sberbank.ru
 domain:error-tracking.megamarket.tech
+domain:metrics.21-school.ru
 domain:sentry.sberauto.com
 domain:tracing-http.megamarket.tech
 domain:visor.sberbank.ru
@@ -541,6 +545,8 @@ domain:advert-api-sandbox.wildberries.ru
 domain:advert-media-api.wildberries.ru
 domain:analytics-stage.wildberries.ru
 domain:analytics.wildberries.ru
+domain:marketing-info.wildberries.ru
+domain:marketplace-sentry.wb.ru
 domain:sentry.wb.ru
 domain:web-analytics.wildberries.ru
 domain:ads.x5media.ru
