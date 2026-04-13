@@ -1,5 +1,10 @@
 # geosite_russia
 
+[![Build geosite.dat](https://github.com/yularzhi/geosite_russia/actions/workflows/build-geosite.yml/badge.svg)](https://github.com/yularzhi/geosite_russia/actions/workflows/build-geosite.yml)
+[![Last Commit](https://img.shields.io/github/last-commit/yularzhi/geosite_russia)](https://github.com/yularzhi/geosite_russia/commits/main)
+[![Release Branch](https://img.shields.io/badge/release-branch-blue)](https://github.com/yularzhi/geosite_russia/tree/release)
+[![Raw geosite.dat](https://img.shields.io/badge/raw-geosite.dat-brightgreen)](https://raw.githubusercontent.com/yularzhi/geosite_russia/release/geosite.dat)
+
 Кастомный geosite.dat для Xray / Sing-box / Happ и других клиентов.
 
 Основная цель проекта — создать лёгкий и эффективный набор доменных правил для работы в России:
