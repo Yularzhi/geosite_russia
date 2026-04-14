@@ -75,6 +75,17 @@ RU_EXCLUDED_SUFFIXES = {
 
 RU_TLDS = (".ru", ".su", ".xn--p1ai")
 
+# Дополнительные домены для viber
+VIBER_EXTRA_DOMAINS = [
+    "api.viber.com",
+    "ads.viber.com",
+    "market.viber.com",
+    "share.viber.com",
+    "unv.viber.com",
+    "invite.viber.com",
+    "pg-vb.cdn.viber.com",
+    "vbr.com",
+]
 
 def fetch_text(url: str) -> str:
     resp = SESSION.get(url, timeout=90)
@@ -313,6 +324,7 @@ def build_flat_root_tags() -> None:
         if tag == "viber":
             rules = flatten_rules("viber")
             rules.extend(flatten_rules("rakuten"))
+            rules.extend(VIBER_EXTRA_DOMAINS)
         else:
             rules = flatten_rules(tag)
 
