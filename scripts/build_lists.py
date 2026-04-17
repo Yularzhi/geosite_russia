@@ -21,6 +21,13 @@ TEXT_SOURCES = {
     ],
 }
 
+MANUAL_RU_BLOCKED_DOMAINS = [
+    "speedtest.net",
+    "www.speedtest.net",
+    "apis-eu-frankfurt.arenti.net",
+    "v2.prod-api-oobit.com",
+]
+
 ROOT_TAGS = [
     "category-ads-all",
     "category-ru",
@@ -313,6 +320,12 @@ def build_ru_blocked() -> None:
         if is_ru_excluded_domain(domain):
             continue
         domains.add(domain)
+
+    # manual additions
+    for domain in MANUAL_RU_BLOCKED_DOMAINS:
+        normalized = normalize_text_domain(domain)
+        if normalized:
+            domains.add(normalized)
 
     write_tag("ru-blocked", sorted(domains))
 
