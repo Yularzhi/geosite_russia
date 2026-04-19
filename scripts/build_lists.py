@@ -88,13 +88,16 @@ RU_TLDS = (".ru", ".su", ".xn--p1ai")
 # Дополнительные домены для viber
 VIBER_EXTRA_DOMAINS = [
     "api.viber.com",
+    "invite.viber.com",
     "ads.viber.com",
     "market.viber.com",
     "share.viber.com",
     "unv.viber.com",
-    "invite.viber.com",
     "pg-vb.cdn.viber.com",
     "vbr.com",
+    "abff.viber.com",
+    "explore.api.viber.com",
+    "abtest.api.viber.com",
 ]
 
 def fetch_text(url: str) -> str:
