@@ -26,6 +26,9 @@ MANUAL_RU_BLOCKED_DOMAINS = [
     "www.speedtest.net",
     "apis-eu-frankfurt.arenti.net",
     "v2.prod-api-oobit.com",
+    "rylmtch.com",
+    "unity3d.com",
+    "drmgms.com",
 ]
 
 ROOT_TAGS = [
