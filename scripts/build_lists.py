@@ -5,7 +5,10 @@ import requests
 
 ROOT = Path(__file__).resolve().parent.parent
 DATA_DIR = ROOT / "data"
+SOURCES_DIR = ROOT / "sources"
+
 DATA_DIR.mkdir(parents=True, exist_ok=True)
+SOURCES_DIR.mkdir(parents=True, exist_ok=True)
 
 SESSION = requests.Session()
 SESSION.headers.update({"User-Agent": "custom-geosite-builder/1.0"})
@@ -14,7 +17,7 @@ DOMAIN_RE = re.compile(r"^(?:[a-z0-9-]+\.)+[a-z]{2,63}$")
 
 DLC_BASE = "https://raw.githubusercontent.com/v2fly/domain-list-community/master/data/"
 PROXY_URL = "https://raw.githubusercontent.com/Loyalsoldier/surge-rules/release/proxy.txt"
-MANUAL_RU_BLOCKED_FILE = DATA_DIR / "manual_ru_blocked.txt"
+MANUAL_RU_BLOCKED_FILE = SOURCES_DIR / "manual_ru_blocked.txt"
 
 TEXT_SOURCES = {
     "ru-blocked": [
@@ -149,7 +152,7 @@ def write_tag(tag: str, lines: list[str]) -> None:
 
 def cleanup_data_dir() -> None:
     for item in DATA_DIR.iterdir():
-        if item.is_file() and item.name != MANUAL_RU_BLOCKED_FILE.name:
+        if item.is_file():
             item.unlink()
 
 
