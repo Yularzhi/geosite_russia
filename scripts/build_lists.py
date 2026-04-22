@@ -31,6 +31,9 @@ MANUAL_RU_BLOCKED_DOMAINS = [
     "drmgms.com",
     "vdsina.com",
     "sunucun.com.tr",
+    "cloudflare.com",
+    "docs.rw",
+    "2ip.io",
 ]
 
 ROOT_TAGS = [
