@@ -14,27 +14,13 @@ DOMAIN_RE = re.compile(r"^(?:[a-z0-9-]+\.)+[a-z]{2,63}$")
 
 DLC_BASE = "https://raw.githubusercontent.com/v2fly/domain-list-community/master/data/"
 PROXY_URL = "https://raw.githubusercontent.com/Loyalsoldier/surge-rules/release/proxy.txt"
+MANUAL_RU_BLOCKED_FILE = DATA_DIR / "manual_ru_blocked.txt"
 
 TEXT_SOURCES = {
     "ru-blocked": [
         "https://community.antifilter.download/list/domains.txt",
     ],
 }
-
-MANUAL_RU_BLOCKED_DOMAINS = [
-    "speedtest.net",
-    "www.speedtest.net",
-    "apis-eu-frankfurt.arenti.net",
-    "v2.prod-api-oobit.com",
-    "rylmtch.com",
-    "unity3d.com",
-    "drmgms.com",
-    "vdsina.com",
-    "sunucun.com.tr",
-    "cloudflare.com",
-    "docs.rw",
-    "2ip.io",
-]
 
 ROOT_TAGS = [
     "category-ads-all",
@@ -105,6 +91,7 @@ VIBER_EXTRA_DOMAINS = [
     "abtest.api.viber.com",
 ]
 
+
 def fetch_text(url: str) -> str:
     resp = SESSION.get(url, timeout=90)
     resp.raise_for_status()
@@ -162,7 +149,7 @@ def write_tag(tag: str, lines: list[str]) -> None:
 
 def cleanup_data_dir() -> None:
     for item in DATA_DIR.iterdir():
-        if item.is_file():
+        if item.is_file() and item.name != MANUAL_RU_BLOCKED_FILE.name:
             item.unlink()
 
 
@@ -307,6 +294,20 @@ def is_ru_excluded_domain(domain: str) -> bool:
     return False
 
 
+def load_manual_domains(file_path: Path) -> list[str]:
+    if not file_path.exists():
+        return []
+
+    domains: list[str] = []
+    for raw_line in file_path.read_text(encoding="utf-8").splitlines():
+        line = strip_inline_comment(raw_line)
+        if not line:
+            continue
+        domains.append(line)
+
+    return domains
+
+
 def build_ru_blocked() -> None:
     domains: set[str] = set()
 
@@ -332,8 +333,8 @@ def build_ru_blocked() -> None:
             continue
         domains.add(domain)
 
-    # manual additions
-    for domain in MANUAL_RU_BLOCKED_DOMAINS:
+    # manual additions from file
+    for domain in load_manual_domains(MANUAL_RU_BLOCKED_FILE):
         normalized = normalize_text_domain(domain)
         if normalized:
             domains.add(normalized)
