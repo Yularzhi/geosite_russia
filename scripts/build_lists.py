@@ -29,6 +29,8 @@ MANUAL_RU_BLOCKED_DOMAINS = [
     "rylmtch.com",
     "unity3d.com",
     "drmgms.com",
+    "vdsina.com",
+    "sunucun.com.tr",
 ]
 
 ROOT_TAGS = [
