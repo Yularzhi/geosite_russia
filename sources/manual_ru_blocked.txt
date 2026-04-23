@@ -11,6 +11,9 @@ v2.prod-api-oobit.com
 # games
 rylmtch.com
 unity3d.com
+firebaseio.com
+googleapis.com
+appsflyersdk.com
 drmgms.com
 callofduty.com
 codm.activision.com
