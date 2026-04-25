@@ -36,6 +36,7 @@ ROOT_TAGS = [
     "google",
     "supercell",
     "roblox",
+    "apple",
     "private",
 ]
 
@@ -94,6 +95,22 @@ VIBER_EXTRA_DOMAINS = [
     "abtest.api.viber.com",
 ]
 
+# Дополнительные домены для apple
+APPLE_DIRECT_DOMAINS = [
+    "apps.apple.com",
+    "itunes.apple.com",
+    "mzstatic.com",
+    "cdn-apple.com",
+    "apple-dns.net",
+    "aaplimg.com",
+    "ls.apple.com",
+    "gspe1-ssl.ls.apple.com",
+    "akadns.net",
+    "akamai.net",
+    "akamaiedge.net",
+    "edgekey.net",
+    "edgesuite.net",
+]
 
 def fetch_text(url: str) -> str:
     resp = SESSION.get(url, timeout=90)
@@ -353,6 +370,8 @@ def build_flat_root_tags() -> None:
             rules = flatten_rules("viber")
             rules.extend(flatten_rules("rakuten"))
             rules.extend(VIBER_EXTRA_DOMAINS)
+        elif tag == "apple":
+            rules = APPLE_DIRECT_DOMAINS    
         else:
             rules = flatten_rules(tag)
 
