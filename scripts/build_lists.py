@@ -19,6 +19,10 @@ DLC_BASE = "https://raw.githubusercontent.com/v2fly/domain-list-community/master
 PROXY_URL = "https://raw.githubusercontent.com/Loyalsoldier/surge-rules/release/proxy.txt"
 MANUAL_RU_BLOCKED_FILE = SOURCES_DIR / "manual_ru_blocked.txt"
 
+ADS_URL = "https://pgl.yoyo.org/adservers/serverlist.php?hostformat=plain&showintro=0&mimetype=plaintext"
+EXTRA_ADS_URL = "https://raw.githubusercontent.com/hagezi/dns-blocklists/main/domains/pro.txt"
+ADS_MAX_TOTAL = 20000
+
 TEXT_SOURCES = {
     "ru-blocked": [
         "https://community.antifilter.download/list/domains.txt",
@@ -41,7 +45,6 @@ ROOT_TAGS = [
 ]
 
 ROOT_TAG_SOURCE = {
-    "category-ads-all": "dlc",
     "category-ru": "dlc",
     "telegram": "dlc",
     "viber": "dlc",
@@ -54,7 +57,6 @@ ROOT_TAG_SOURCE = {
     "private": "dlc",
 }
 
-# Явно российские домены/суффиксы, которые не должны попадать в ru-blocked
 RU_EXCLUDED_SUFFIXES = {
     "vk.ru",
     "vk.com",
@@ -80,7 +82,39 @@ RU_EXCLUDED_SUFFIXES = {
 
 RU_TLDS = (".ru", ".su", ".xn--p1ai")
 
-# Дополнительные домены для viber
+ADS_SAFE_DOMAINS = {
+    "yandex.ru",
+    "yandex.net",
+    "ya.ru",
+    "mail.ru",
+    "vk.ru",
+    "vk.com",
+    "ok.ru",
+    "odnoklassniki.ru",
+    "gosuslugi.ru",
+    "nalog.ru",
+    "sberbank.ru",
+    "tbank.ru",
+    "vtb.ru",
+    "alfabank.ru",
+    "rambler.ru",
+    "rutube.ru",
+    "dzen.ru",
+}
+
+ADS_EXCLUDE_KEYWORDS = (
+    "cloudflare",
+    "apple",
+    "icloud",
+    "microsoft",
+    "windows",
+    "office",
+    "googleapis",
+    "gstatic",
+    "github",
+    "githubusercontent",
+)
+
 VIBER_EXTRA_DOMAINS = [
     "api.viber.com",
     "invite.viber.com",
@@ -95,7 +129,6 @@ VIBER_EXTRA_DOMAINS = [
     "abtest.api.viber.com",
 ]
 
-# Дополнительные домены для apple
 APPLE_DIRECT_DOMAINS = [
     "apps.apple.com",
     "itunes.apple.com",
@@ -111,6 +144,7 @@ APPLE_DIRECT_DOMAINS = [
     "edgekey.net",
     "edgesuite.net",
 ]
+
 
 def fetch_text(url: str) -> str:
     resp = SESSION.get(url, timeout=90)
@@ -130,7 +164,6 @@ def normalize_text_domain(line: str) -> str | None:
     if line.startswith("#") or line.startswith("//") or line.startswith(";"):
         return None
 
-    # antifilter format: *://*.example.com/*
     line = line.replace("*://*.", "")
     line = line.replace("*://", "")
     line = line.replace("/*", "")
@@ -256,7 +289,12 @@ def flatten_rules(
 
     seen.add(seen_key)
 
-    text = fetch_text(get_tag_url(tag))
+    try:
+        text = fetch_text(get_tag_url(tag))
+    except requests.HTTPError as e:
+        print(f"Warning: skip missing DLC include: {tag} ({e})")
+        return []
+
     rules: list[str] = []
 
     for raw_line in text.splitlines():
@@ -328,21 +366,96 @@ def load_manual_domains(file_path: Path) -> list[str]:
     return domains
 
 
+def is_safe_ads_domain(domain: str) -> bool:
+    return any(domain == safe or domain.endswith("." + safe) for safe in ADS_SAFE_DOMAINS)
+
+
+def is_good_ads_domain(domain: str) -> bool:
+    if is_safe_ads_domain(domain):
+        return False
+
+    if any(keyword in domain for keyword in ADS_EXCLUDE_KEYWORDS):
+        return False
+
+    if len(domain) > 80:
+        return False
+
+    if domain.count(".") > 4:
+        return False
+
+    return True
+
+
+def build_ads() -> None:
+    domains: set[str] = set()
+
+    for line in fetch_lines(ADS_URL):
+        domain = normalize_text_domain(line)
+        if domain and is_good_ads_domain(domain):
+            domains.add(domain)
+
+    extra_domains: set[str] = set()
+
+    for line in fetch_lines(EXTRA_ADS_URL):
+        domain = normalize_text_domain(line)
+        if not domain:
+            continue
+        if domain in domains:
+            continue
+        if not is_good_ads_domain(domain):
+            continue
+
+        extra_domains.add(domain)
+
+    def score(domain: str) -> tuple[int, int, int]:
+        priority_words = (
+            "ad",
+            "ads",
+            "track",
+            "tracking",
+            "stat",
+            "stats",
+            "analytics",
+            "metric",
+            "pixel",
+            "counter",
+            "banner",
+            "click",
+            "promo",
+        )
+
+        has_priority = 0 if any(word in domain for word in priority_words) else 1
+
+        return (
+            has_priority,
+            domain.count("."),
+            len(domain),
+        )
+
+    for domain in sorted(extra_domains, key=score):
+        if len(domains) >= ADS_MAX_TOTAL:
+            break
+        domains.add(domain)
+
+    if not domains:
+        raise RuntimeError("category-ads-all is empty")
+
+    print(f"ADS total: {len(domains)}")
+    write_tag("category-ads-all", sorted(domains))
+
+
 def build_ru_blocked() -> None:
     domains: set[str] = set()
 
-    # antifilter
     for url in TEXT_SOURCES["ru-blocked"]:
         for line in fetch_lines(url):
             domain = normalize_text_domain(line)
             if domain:
                 domains.add(domain)
 
-    # category-ru plain domains for exclusion from proxy.txt
     category_ru_rules = flatten_rules("category-ru")
     category_ru_domains = extract_plain_domains_from_rules(category_ru_rules)
 
-    # proxy.txt minus category-ru and minus explicit RU exclusions
     for line in fetch_lines(PROXY_URL):
         domain = normalize_text_domain(line)
         if not domain:
@@ -353,7 +466,6 @@ def build_ru_blocked() -> None:
             continue
         domains.add(domain)
 
-    # manual additions from file
     for domain in load_manual_domains(MANUAL_RU_BLOCKED_FILE):
         normalized = normalize_text_domain(domain)
         if normalized:
@@ -364,6 +476,9 @@ def build_ru_blocked() -> None:
 
 def build_flat_root_tags() -> None:
     for tag in ROOT_TAGS:
+        if tag == "category-ads-all":
+            continue
+
         print(f"Building tag: {tag}")
 
         if tag == "viber":
@@ -371,7 +486,7 @@ def build_flat_root_tags() -> None:
             rules.extend(flatten_rules("rakuten"))
             rules.extend(VIBER_EXTRA_DOMAINS)
         elif tag == "apple":
-            rules = APPLE_DIRECT_DOMAINS    
+            rules = APPLE_DIRECT_DOMAINS
         else:
             rules = flatten_rules(tag)
 
@@ -382,6 +497,7 @@ def build_flat_root_tags() -> None:
 def main() -> None:
     cleanup_data_dir()
     build_ru_blocked()
+    build_ads()
     build_flat_root_tags()
     print("Done.")
 
