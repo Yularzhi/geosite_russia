@@ -21,7 +21,7 @@ MANUAL_RU_BLOCKED_FILE = SOURCES_DIR / "manual_ru_blocked.txt"
 
 ADS_URL = "https://pgl.yoyo.org/adservers/serverlist.php?hostformat=plain&showintro=0&mimetype=plaintext"
 EXTRA_ADS_URL = "https://raw.githubusercontent.com/hagezi/dns-blocklists/main/domains/pro.txt"
-ADS_MAX_TOTAL = 20000
+ADS_MAX_TOTAL = 30000
 
 TEXT_SOURCES = {
     "ru-blocked": [
@@ -367,7 +367,7 @@ def load_manual_domains(file_path: Path) -> list[str]:
 
 
 def is_safe_ads_domain(domain: str) -> bool:
-    return any(domain == safe or domain.endswith("." + safe) for safe in ADS_SAFE_DOMAINS)
+    return domain in ADS_SAFE_DOMAINS
 
 
 def is_good_ads_domain(domain: str) -> bool:
