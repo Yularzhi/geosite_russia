@@ -19,9 +19,7 @@ DLC_BASE = "https://raw.githubusercontent.com/v2fly/domain-list-community/master
 PROXY_URL = "https://raw.githubusercontent.com/Loyalsoldier/surge-rules/release/proxy.txt"
 MANUAL_RU_BLOCKED_FILE = SOURCES_DIR / "manual_ru_blocked.txt"
 
-ADS_URL = "https://pgl.yoyo.org/adservers/serverlist.php?hostformat=plain&showintro=0&mimetype=plaintext"
-EXTRA_ADS_URL = "https://raw.githubusercontent.com/hagezi/dns-blocklists/main/domains/pro.txt"
-ADS_MAX_TOTAL = 30000
+OISD_SMALL_URL = "https://raw.githubusercontent.com/sjhgvr/oisd/main/domainswild2_small.txt"
 
 TEXT_SOURCES = {
     "ru-blocked": [
@@ -385,64 +383,22 @@ def is_good_ads_domain(domain: str) -> bool:
 
     return True
 
-
 def build_ads() -> None:
     domains: set[str] = set()
 
-    for line in fetch_lines(ADS_URL):
+    for line in fetch_lines(OISD_SMALL_URL):
+        line = line.strip()
+        if not line or line.startswith("#"):
+            continue
         domain = normalize_text_domain(line)
         if domain and is_good_ads_domain(domain):
             domains.add(domain)
-
-    extra_domains: set[str] = set()
-
-    for line in fetch_lines(EXTRA_ADS_URL):
-        domain = normalize_text_domain(line)
-        if not domain:
-            continue
-        if domain in domains:
-            continue
-        if not is_good_ads_domain(domain):
-            continue
-
-        extra_domains.add(domain)
-
-    def score(domain: str) -> tuple[int, int, int]:
-        priority_words = (
-            "ad",
-            "ads",
-            "track",
-            "tracking",
-            "stat",
-            "stats",
-            "analytics",
-            "metric",
-            "pixel",
-            "counter",
-            "banner",
-            "click",
-            "promo",
-        )
-
-        has_priority = 0 if any(word in domain for word in priority_words) else 1
-
-        return (
-            has_priority,
-            domain.count("."),
-            len(domain),
-        )
-
-    for domain in sorted(extra_domains, key=score):
-        if len(domains) >= ADS_MAX_TOTAL:
-            break
-        domains.add(domain)
 
     if not domains:
         raise RuntimeError("category-ads-all is empty")
 
     print(f"ADS total: {len(domains)}")
     write_tag("category-ads-all", sorted(domains))
-
 
 def build_ru_blocked() -> None:
     domains: set[str] = set()
