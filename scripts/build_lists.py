@@ -19,6 +19,8 @@ DLC_BASE = "https://raw.githubusercontent.com/v2fly/domain-list-community/master
 PROXY_URL = "https://raw.githubusercontent.com/Loyalsoldier/surge-rules/release/proxy.txt"
 MANUAL_RU_BLOCKED_FILE = SOURCES_DIR / "manual_ru_blocked.txt"
 
+PETER_LOWE_URL = "https://pgl.yoyo.org/adservers/serverlist.php?hostformat=plain&showintro=0&mimetype=plaintext"
+
 TEXT_SOURCES = {
     "ru-blocked": [
         "https://community.antifilter.download/list/domains.txt",
@@ -329,6 +331,30 @@ def load_manual_domains(file_path: Path) -> list[str]:
 
     return domains
 
+def build_ads() -> None:
+    domains: set[str] = set()
+
+    # DLC category-ads-all
+    for rule in flatten_rules("category-ads-all"):
+        rule = rule.strip()
+        if not rule or rule.startswith(("full:", "keyword:", "regexp:", "domain:", "include:")):
+            continue
+        domain = normalize_text_domain(rule)
+        if domain:
+            domains.add(domain)
+
+    # Peter Lowe
+    for line in fetch_lines(PETER_LOWE_URL):
+        domain = normalize_text_domain(line)
+        if domain:
+            domains.add(domain)
+
+    if not domains:
+        raise RuntimeError("category-ads-all is empty")
+
+    print(f"ADS total: {len(domains)}")
+    write_tag("category-ads-all", sorted(domains))
+
 def build_ru_blocked() -> None:
     domains: set[str] = set()
 
@@ -361,6 +387,8 @@ def build_ru_blocked() -> None:
 
 def build_flat_root_tags() -> None:
     for tag in ROOT_TAGS:
+        if tag == "category-ads-all":
+            continue
 
         print(f"Building tag: {tag}")
 
@@ -380,6 +408,7 @@ def build_flat_root_tags() -> None:
 def main() -> None:
     cleanup_data_dir()
     build_ru_blocked()
+    build_ads()
     build_flat_root_tags()
     print("Done.")
 
