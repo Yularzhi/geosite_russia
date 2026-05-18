@@ -99,18 +99,16 @@ APPLE_DIRECT_DOMAINS = [
     "apps.apple.com",
     "itunes.apple.com",
     "mzstatic.com",
+    "aaplimg.com",
     "cdn-apple.com",
     "apple-dns.net",
-    "aaplimg.com",
-    "ls.apple.com",
-    "gspe1-ssl.ls.apple.com",
-    "akadns.net",
-    "akamai.net",
-    "akamaiedge.net",
-    "edgekey.net",
-    "edgesuite.net",
+    "updates-http.cdn-apple.com",
+    "xp.apple.com",
+    "swscan.apple.com",
+    "swcdn.apple.com",
+    "swdist.apple.com",
+    "gg.apple.com",
 ]
-
 
 def fetch_text(url: str) -> str:
     resp = SESSION.get(url, timeout=90)
