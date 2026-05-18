@@ -19,8 +19,6 @@ DLC_BASE = "https://raw.githubusercontent.com/v2fly/domain-list-community/master
 PROXY_URL = "https://raw.githubusercontent.com/Loyalsoldier/surge-rules/release/proxy.txt"
 MANUAL_RU_BLOCKED_FILE = SOURCES_DIR / "manual_ru_blocked.txt"
 
-OISD_SMALL_URL = "https://raw.githubusercontent.com/sjhgvr/oisd/main/domainswild2_small.txt"
-
 TEXT_SOURCES = {
     "ru-blocked": [
         "https://community.antifilter.download/list/domains.txt",
@@ -43,6 +41,7 @@ ROOT_TAGS = [
 ]
 
 ROOT_TAG_SOURCE = {
+    "category-ads-all": "dlc",
     "category-ru": "dlc",
     "telegram": "dlc",
     "viber": "dlc",
@@ -79,39 +78,6 @@ RU_EXCLUDED_SUFFIXES = {
 }
 
 RU_TLDS = (".ru", ".su", ".xn--p1ai")
-
-ADS_SAFE_DOMAINS = {
-    "yandex.ru",
-    "yandex.net",
-    "ya.ru",
-    "mail.ru",
-    "vk.ru",
-    "vk.com",
-    "ok.ru",
-    "odnoklassniki.ru",
-    "gosuslugi.ru",
-    "nalog.ru",
-    "sberbank.ru",
-    "tbank.ru",
-    "vtb.ru",
-    "alfabank.ru",
-    "rambler.ru",
-    "rutube.ru",
-    "dzen.ru",
-}
-
-ADS_EXCLUDE_KEYWORDS = (
-    "cloudflare",
-    "apple",
-    "icloud",
-    "microsoft",
-    "windows",
-    "office",
-    "googleapis",
-    "gstatic",
-    "github",
-    "githubusercontent",
-)
 
 VIBER_EXTRA_DOMAINS = [
     "api.viber.com",
@@ -363,43 +329,6 @@ def load_manual_domains(file_path: Path) -> list[str]:
 
     return domains
 
-
-def is_safe_ads_domain(domain: str) -> bool:
-    return domain in ADS_SAFE_DOMAINS
-
-
-def is_good_ads_domain(domain: str) -> bool:
-    if is_safe_ads_domain(domain):
-        return False
-
-    if any(keyword in domain for keyword in ADS_EXCLUDE_KEYWORDS):
-        return False
-
-    if len(domain) > 80:
-        return False
-
-    if domain.count(".") > 4:
-        return False
-
-    return True
-
-def build_ads() -> None:
-    domains: set[str] = set()
-
-    for line in fetch_lines(OISD_SMALL_URL):
-        line = line.strip()
-        if not line or line.startswith("#"):
-            continue
-        domain = normalize_text_domain(line)
-        if domain and is_good_ads_domain(domain):
-            domains.add(domain)
-
-    if not domains:
-        raise RuntimeError("category-ads-all is empty")
-
-    print(f"ADS total: {len(domains)}")
-    write_tag("category-ads-all", sorted(domains))
-
 def build_ru_blocked() -> None:
     domains: set[str] = set()
 
@@ -432,8 +361,6 @@ def build_ru_blocked() -> None:
 
 def build_flat_root_tags() -> None:
     for tag in ROOT_TAGS:
-        if tag == "category-ads-all":
-            continue
 
         print(f"Building tag: {tag}")
 
@@ -453,7 +380,6 @@ def build_flat_root_tags() -> None:
 def main() -> None:
     cleanup_data_dir()
     build_ru_blocked()
-    build_ads()
     build_flat_root_tags()
     print("Done.")
 
