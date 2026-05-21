@@ -110,6 +110,10 @@ APPLE_DIRECT_DOMAINS = [
     "gg.apple.com",
 ]
 
+ADS_EXCLUDED_DOMAINS = {
+    "yabs.yandex.ru",
+}
+
 def fetch_text(url: str) -> str:
     resp = SESSION.get(url, timeout=90)
     resp.raise_for_status()
@@ -338,13 +342,13 @@ def build_ads() -> None:
         if not rule or rule.startswith(("full:", "keyword:", "regexp:", "domain:", "include:")):
             continue
         domain = normalize_text_domain(rule)
-        if domain:
+        if domain and domain not in ADS_EXCLUDED_DOMAINS:
             domains.add(domain)
 
     # Peter Lowe
     for line in fetch_lines(PETER_LOWE_URL):
         domain = normalize_text_domain(line)
-        if domain:
+        if domain and domain not in ADS_EXCLUDED_DOMAINS:
             domains.add(domain)
 
     if not domains:
