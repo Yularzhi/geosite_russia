@@ -96,25 +96,20 @@ VIBER_EXTRA_DOMAINS = [
 ]
 
 APPLE_DIRECT_DOMAINS = [
-    # 📥 CDN загрузок (App Store downloads)
+    # CDN загрузок (App Store downloads)
     "mzstatic.com",
     "appldnld.apple.com",
     "oscdn.apple.com",
     "updates-http.cdn-apple.com",
-    # 💻 Software Update
-    "swscan.apple.com",
+    # Software Update CDN (только скачивание файлов, не сканирование)
     "swcdn.apple.com",
     "swdist.apple.com",
-    "gdmf.apple.com",
-    "mesu.apple.com",
-    # 🖼 Дополнительные CDN
+    # Дополнительные CDN
     "aaplimg.com",
     "cdn-apple.com",
-    # 🏗 Инфраструктура (обязательно direct)
+    # Инфраструктура
     "ocsp.apple.com",
     "captive.apple.com",
-    "xp.apple.com",
-    "gg.apple.com",
 ]
 
 ADS_EXCLUDED_DOMAINS = {
