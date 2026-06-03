@@ -96,20 +96,36 @@ VIBER_EXTRA_DOMAINS = [
 ]
 
 APPLE_DIRECT_DOMAINS = [
-    # CDN загрузок (App Store downloads)
-    "mzstatic.com",
-    "appldnld.apple.com",
-    "oscdn.apple.com",
-    "updates-http.cdn-apple.com",
-    # Software Update CDN (только скачивание файлов, не сканирование)
-    "swcdn.apple.com",
-    "swdist.apple.com",
-    # Дополнительные CDN
-    "aaplimg.com",
-    "cdn-apple.com",
-    # Инфраструктура
-    "ocsp.apple.com",
-    "captive.apple.com",
+    # ── App Store / Media Services CDN ────────────────────────────────
+    # Скачивание приложений, книг, музыки, фильмов
+    "mzstatic.com",             # CDN Apple Media Services (App Store контент)
+    "itunes.apple.com",         # iTunes Store / App Store (контент)
+    "apps.apple.com",           # App Store (контент: приложения, книги, музыка)
+
+    # ── Software Update CDN ───────────────────────────────────────────
+    # Скачивание и обновления ОС (iOS, iPadOS, macOS, watchOS, tvOS)
+    "appldnld.apple.com",       # Прошивки iOS/iPadOS/watchOS/visionOS + carrier bundles
+    "updates-http.cdn-apple.com",  # Обновления ПО (HTTP, порт 80)
+    "updates.cdn-apple.com",    # Обновления ПО (HTTPS, порт 443)
+    "gg.apple.com",             # Обновления iOS/iPadOS/tvOS/watchOS/macOS
+    "gs.apple.com",             # TSS (Signature Service) обновлений ОС
+    "mesu.apple.com",           # Каталоги обновлений ПО (хостит update-каталоги)
+    "gdmf.apple.com",           # OTA-каталог обновлений (Pallas)
+
+    # ── macOS Update CDN ──────────────────────────────────────────────
+    # Только скачивание файлов обновлений macOS
+    "swcdn.apple.com",          # CDN обновлений macOS
+    "swdist.apple.com",         # Дистрибуция обновлений macOS
+    "swdownload.apple.com",     # Загрузка обновлений macOS (поддерживает прокси)
+    "swscan.apple.com",         # Сканирование обновлений macOS
+
+    # ── macOS Recovery ────────────────────────────────────────────────
+    "oscdn.apple.com",          # macOS Recovery (загрузка recovery-образов)
+    "osrecovery.apple.com",     # macOS Recovery (восстановление системы)
+
+    # ── Apple CDN инфраструктура ──────────────────────────────────────
+    "aaplimg.com",              # CDN маршрутизации дата-центров (Akamai → Apple CDN)
+    "cdn-apple.com",            # CDN для прошивок и контента
 ]
 
 ADS_EXCLUDED_DOMAINS = {
