@@ -83,10 +83,12 @@ dartlang.org
 dartpad.dev
 fastlane.ci
 fastlane.tools
+crashlytics.com
 firebase.com
 firebase.io
 firebaseapp.com
 firebaseio.com
+full:crashlyticsreports-pa.googleapis.com
 full:firebase-settings.crashlytics.com
 full:firebase.google.com
 full:firebase.googleapis.com
@@ -100,6 +102,7 @@ full:firebaselogging-pa.googleapis.com
 full:firebaselogging.googleapis.com
 full:firebaseperusertopics-pa.googleapis.com
 full:firebaseremoteconfig.googleapis.com
+full:update.crashlytics.com
 flutter.dev
 flutterapp.com
 pub.dev
@@ -998,10 +1001,13 @@ pagead.l.google.com
 partnerad.l.google.com
 urchin.com
 full:analytics.google.com
+265.com
 gvt1-cn.com
 gvt2-cn.com
+full:recaptcha-cn.net
+full:recaptcha.net
+full:www.recaptcha-cn.net
 full:www.recaptcha.net
-full:265.com
 full:2mdn-cn.net
 full:2mdn.net
 full:admob-cn.com
@@ -1026,7 +1032,6 @@ full:clickserver.googleads.com
 full:clientservices.googleapis.com
 full:cn.widevine.com
 full:connectivitycheck.gstatic.com
-full:crashlyticsreports-pa.googleapis.com
 full:csi.gstatic.com
 full:dartsearch-cn.net
 full:dg-meta.video.google.com
@@ -1075,8 +1080,6 @@ full:prod-databe.floonet.goog
 full:prod.databe.floonet.goog
 full:qiao-cn.com
 full:qpx.googleflights.net
-full:recaptcha-cn.net
-full:recaptcha.net
 full:redirector.bdn.dev
 full:redirector.c.chat.google.com
 full:redirector.c.mail.google.com
@@ -1097,7 +1100,6 @@ full:staging-databe.floonet.goog
 full:staging.databe.floonet.goog
 full:tac.googleapis.com
 full:tools.google.com
-full:update.crashlytics.com
 full:update.googleapis.com
 full:wear.googleapis.com
 full:www-google-analytics.l.google.com
