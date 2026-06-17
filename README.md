@@ -26,9 +26,7 @@
 
 🚀 Основной список
 ru-blocked — объединённый список:
-- community.antifilter.download
-- Loyalsoldier surge-rules (proxy.txt)
-- из proxy.txt удалены домены из category-ru
+- runetfreedom/russia-blocked-geosite (ru-blocked.txt)
 
 Покрывает:
 - заблокированные сайты
@@ -40,7 +38,7 @@ ru-blocked — объединённый список:
 category-ru — официальный список российских доменов из v2fly
 
 🚫 Реклама
-category-ads-all — полный список рекламы (развёрнутый, без include)
+category-ads-all — список рекламы из runetfreedom (category-ads-all.txt)
 
 📱 Сервисы
 telegram
@@ -104,11 +102,9 @@ geosite:category-ads-all
 
 Сборка выполняется автоматически через GitHub Actions:
 
-- скачиваются исходные списки
+- скачиваются исходные списки из runetfreedom/russia-blocked-geosite
 - нормализуются домены
-- объединяются списки
-- из proxy.txt исключаются домены category-ru
-- разворачиваются include зависимости
+- разворачиваются include зависимости из v2fly DLC
 - генерируется geosite.dat
 - публикуется в ветку release
 
@@ -117,7 +113,8 @@ geosite:category-ads-all
 ## 📊 Особенности
 
 - оптимизировано под низкое потребление памяти (~20–30 MB)
-- proxy.txt используется в очищенном виде (без RU доменов)
+- ru-blocked берётся из готового списка runetfreedom (уже очищен от RU доменов)
+- category-ads-all берётся из готового списка runetfreedom
 - отсутствуют лишние и дублирующие списки
 - все зависимости разворачиваются в плоский вид
 - полный контроль над составом списков
@@ -125,14 +122,10 @@ geosite:category-ads-all
 ## 📚 Источники
 
 Основные:
-https://community.antifilter.download
-https://github.com/Loyalsoldier/surge-rules
+https://github.com/runetfreedom/russia-blocked-geosite
 
 Upstream:
 https://github.com/v2fly/domain-list-community
-
-Производные проекты:
-https://github.com/Loyalsoldier/v2ray-rules-dat
 
 ## 🙏 Благодарности
 
@@ -140,13 +133,13 @@ v2fly
 https://github.com/v2fly/domain-list-community  
 Базовый проект geosite
 
+RunetFreedom  
+https://github.com/runetfreedom/russia-blocked-geosite  
+Списки заблокированных доменов и рекламы для России
+
 Loyalsoldier  
 https://github.com/Loyalsoldier/v2ray-rules-dat  
 Идеи сборки и структура
-
-surge-rules  
-https://github.com/Loyalsoldier/surge-rules  
-Источник proxy.txt
 
 Antifilter  
 https://community.antifilter.download  
@@ -154,8 +147,8 @@ https://community.antifilter.download
 
 ## ⚠️ Примечания
 
-- ru-blocked — кастомный список (proxy.txt - category-ru + antifilter)
-- российские домены исключаются из proxy автоматически
+- ru-blocked — готовый список из runetfreedom (уже очищен от российских доменов)
+- category-ads-all — готовый список рекламы из runetfreedom
 - viber расширен доменами Rakuten
 - category-ads-all используется в полном развёрнутом виде
 - итоговый файл не содержит промежуточных тегов

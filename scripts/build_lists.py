@@ -16,16 +16,9 @@ SESSION.headers.update({"User-Agent": "custom-geosite-builder/1.0"})
 DOMAIN_RE = re.compile(r"^(?:[a-z0-9-]+\.)+[a-z]{2,63}$")
 
 DLC_BASE = "https://raw.githubusercontent.com/v2fly/domain-list-community/master/data/"
-PROXY_URL = "https://raw.githubusercontent.com/Loyalsoldier/surge-rules/release/proxy.txt"
+RUNETFREEDOM_RU_BLOCKED_URL = "https://raw.githubusercontent.com/runetfreedom/russia-blocked-geosite/release/ru-blocked.txt"
+RUNETFREEDOM_ADS_URL = "https://raw.githubusercontent.com/runetfreedom/russia-blocked-geosite/release/category-ads-all.txt"
 MANUAL_RU_BLOCKED_FILE = SOURCES_DIR / "manual_ru_blocked.txt"
-
-PETER_LOWE_URL = "https://pgl.yoyo.org/adservers/serverlist.php?hostformat=plain&showintro=0&mimetype=plaintext"
-
-TEXT_SOURCES = {
-    "ru-blocked": [
-        "https://community.antifilter.download/list/domains.txt",
-    ],
-}
 
 ROOT_TAGS = [
     "category-ads-all",
@@ -43,7 +36,6 @@ ROOT_TAGS = [
 ]
 
 ROOT_TAG_SOURCE = {
-    "category-ads-all": "dlc",
     "category-ru": "dlc",
     "telegram": "dlc",
     "viber": "dlc",
@@ -55,31 +47,6 @@ ROOT_TAG_SOURCE = {
     "roblox": "dlc",
     "private": "dlc",
 }
-
-RU_EXCLUDED_SUFFIXES = {
-    "vk.ru",
-    "vk.com",
-    "vkvideo.ru",
-    "vkuser.net",
-    "vkuservideo.net",
-    "mycdn.me",
-    "mail.ru",
-    "inbox.ru",
-    "list.ru",
-    "bk.ru",
-    "ok.ru",
-    "odnoklassniki.ru",
-    "yandex.ru",
-    "yandex.net",
-    "ya.ru",
-    "dzen.ru",
-    "rutube.ru",
-    "rambler.ru",
-    "kinoafisha.info",
-    "cdn-vk.ru",
-}
-
-RU_TLDS = (".ru", ".su", ".xn--p1ai")
 
 VIBER_EXTRA_DOMAINS = [
     "api.viber.com",
@@ -128,10 +95,6 @@ APPLE_DIRECT_DOMAINS = [
     "cdn-apple.com",            # CDN для прошивок и контента
 ]
 
-ADS_EXCLUDED_DOMAINS = {
-    "yabs.yandex.ru",
-}
-
 def fetch_text(url: str) -> str:
     resp = SESSION.get(url, timeout=90)
     resp.raise_for_status()
@@ -178,6 +141,21 @@ def normalize_text_domain(line: str) -> str | None:
         return None
 
     return line if DOMAIN_RE.match(line) else None
+
+
+def normalize_dlc_domain(line: str) -> str | None:
+    """Parse DLC-format lines like 'domain:example.com' or '@ads domain:example.com'."""
+    line = line.strip()
+    if not line or line.startswith("#"):
+        return None
+
+    for part in line.split():
+        if part.startswith("domain:"):
+            domain = part[7:].strip()
+            if domain and DOMAIN_RE.match(domain):
+                return domain
+
+    return None
 
 
 def write_tag(tag: str, lines: list[str]) -> None:
@@ -327,17 +305,6 @@ def extract_plain_domains_from_rules(rules: list[str]) -> set[str]:
     return result
 
 
-def is_ru_excluded_domain(domain: str) -> bool:
-    for suffix in RU_EXCLUDED_SUFFIXES:
-        if domain == suffix or domain.endswith("." + suffix):
-            return True
-
-    if domain.endswith(RU_TLDS):
-        return True
-
-    return False
-
-
 def load_manual_domains(file_path: Path) -> list[str]:
     if not file_path.exists():
         return []
@@ -354,19 +321,9 @@ def load_manual_domains(file_path: Path) -> list[str]:
 def build_ads() -> None:
     domains: set[str] = set()
 
-    # DLC category-ads-all
-    for rule in flatten_rules("category-ads-all"):
-        rule = rule.strip()
-        if not rule or rule.startswith(("full:", "keyword:", "regexp:", "domain:", "include:")):
-            continue
-        domain = normalize_text_domain(rule)
-        if domain and domain not in ADS_EXCLUDED_DOMAINS:
-            domains.add(domain)
-
-    # Peter Lowe
-    for line in fetch_lines(PETER_LOWE_URL):
-        domain = normalize_text_domain(line)
-        if domain and domain not in ADS_EXCLUDED_DOMAINS:
+    for line in fetch_lines(RUNETFREEDOM_ADS_URL):
+        domain = normalize_dlc_domain(line)
+        if domain:
             domains.add(domain)
 
     if not domains:
@@ -378,24 +335,10 @@ def build_ads() -> None:
 def build_ru_blocked() -> None:
     domains: set[str] = set()
 
-    for url in TEXT_SOURCES["ru-blocked"]:
-        for line in fetch_lines(url):
-            domain = normalize_text_domain(line)
-            if domain:
-                domains.add(domain)
-
-    category_ru_rules = flatten_rules("category-ru")
-    category_ru_domains = extract_plain_domains_from_rules(category_ru_rules)
-
-    for line in fetch_lines(PROXY_URL):
-        domain = normalize_text_domain(line)
-        if not domain:
-            continue
-        if domain in category_ru_domains:
-            continue
-        if is_ru_excluded_domain(domain):
-            continue
-        domains.add(domain)
+    for line in fetch_lines(RUNETFREEDOM_RU_BLOCKED_URL):
+        domain = normalize_dlc_domain(line)
+        if domain:
+            domains.add(domain)
 
     for domain in load_manual_domains(MANUAL_RU_BLOCKED_FILE):
         normalized = normalize_text_domain(domain)
