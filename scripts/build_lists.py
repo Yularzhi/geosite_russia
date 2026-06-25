@@ -62,6 +62,10 @@ VIBER_EXTRA_DOMAINS = [
     "abtest.api.viber.com",
 ]
 
+CATEGORY_RU_EXTRA_DOMAINS = [
+    "lk-new.licard.com",
+]
+
 APPLE_DIRECT_DOMAINS = [
     # ── App Store / Media Services CDN ────────────────────────────────
     # Скачивание приложений, книг, музыки, фильмов
@@ -359,6 +363,9 @@ def build_flat_root_tags() -> None:
             rules = flatten_rules("viber")
             rules.extend(flatten_rules("rakuten"))
             rules.extend(VIBER_EXTRA_DOMAINS)
+        elif tag == "category-ru":
+            rules = flatten_rules(tag)
+            rules.extend(CATEGORY_RU_EXTRA_DOMAINS)
         elif tag == "apple":
             rules = APPLE_DIRECT_DOMAINS
         else:
