@@ -64,6 +64,7 @@ VIBER_EXTRA_DOMAINS = [
 
 CATEGORY_RU_EXTRA_DOMAINS = [
     "lk-new.licard.com",
+    "1cfresh.com",
 ]
 
 APPLE_DIRECT_DOMAINS = [
