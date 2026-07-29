@@ -100,18 +100,21 @@ SHA256:
 https://raw.githubusercontent.com/yularzhi/geosite_russia/release/geosite.dat.sha256
 
 Sing-box rule-sets:
-- [`category-ads-all.srs`](https://raw.githubusercontent.com/yularzhi/geosite_russia/release/sing-box/category-ads-all.srs)
-- [`category-ru.srs`](https://raw.githubusercontent.com/yularzhi/geosite_russia/release/sing-box/category-ru.srs)
-- [`telegram.srs`](https://raw.githubusercontent.com/yularzhi/geosite_russia/release/sing-box/telegram.srs)
-- [`viber.srs`](https://raw.githubusercontent.com/yularzhi/geosite_russia/release/sing-box/viber.srs)
-- [`whatsapp.srs`](https://raw.githubusercontent.com/yularzhi/geosite_russia/release/sing-box/whatsapp.srs)
-- [`meta.srs`](https://raw.githubusercontent.com/yularzhi/geosite_russia/release/sing-box/meta.srs)
-- [`facebook.srs`](https://raw.githubusercontent.com/yularzhi/geosite_russia/release/sing-box/facebook.srs)
-- [`google.srs`](https://raw.githubusercontent.com/yularzhi/geosite_russia/release/sing-box/google.srs)
-- [`supercell.srs`](https://raw.githubusercontent.com/yularzhi/geosite_russia/release/sing-box/supercell.srs)
-- [`roblox.srs`](https://raw.githubusercontent.com/yularzhi/geosite_russia/release/sing-box/roblox.srs)
-- [`apple.srs`](https://raw.githubusercontent.com/yularzhi/geosite_russia/release/sing-box/apple.srs)
-- [`private.srs`](https://raw.githubusercontent.com/yularzhi/geosite_russia/release/sing-box/private.srs)
+
+| Tag | Raw URL |
+| --- | --- |
+| `category-ads-all` | [srs](https://raw.githubusercontent.com/yularzhi/geosite_russia/release/sing-box/category-ads-all.srs) |
+| `category-ru` | [srs](https://raw.githubusercontent.com/yularzhi/geosite_russia/release/sing-box/category-ru.srs) |
+| `telegram` | [srs](https://raw.githubusercontent.com/yularzhi/geosite_russia/release/sing-box/telegram.srs) |
+| `viber` | [srs](https://raw.githubusercontent.com/yularzhi/geosite_russia/release/sing-box/viber.srs) |
+| `whatsapp` | [srs](https://raw.githubusercontent.com/yularzhi/geosite_russia/release/sing-box/whatsapp.srs) |
+| `meta` | [srs](https://raw.githubusercontent.com/yularzhi/geosite_russia/release/sing-box/meta.srs) |
+| `facebook` | [srs](https://raw.githubusercontent.com/yularzhi/geosite_russia/release/sing-box/facebook.srs) |
+| `google` | [srs](https://raw.githubusercontent.com/yularzhi/geosite_russia/release/sing-box/google.srs) |
+| `supercell` | [srs](https://raw.githubusercontent.com/yularzhi/geosite_russia/release/sing-box/supercell.srs) |
+| `roblox` | [srs](https://raw.githubusercontent.com/yularzhi/geosite_russia/release/sing-box/roblox.srs) |
+| `apple` | [srs](https://raw.githubusercontent.com/yularzhi/geosite_russia/release/sing-box/apple.srs) |
+| `private` | [srs](https://raw.githubusercontent.com/yularzhi/geosite_russia/release/sing-box/private.srs) |
 
 ## ⚙️ Использование
 
