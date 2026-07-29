@@ -21,6 +21,7 @@ SESSION.headers.update({"User-Agent": "custom-geosite-builder/1.0"})
 DOMAIN_RE = re.compile(r"^(?:[a-z0-9-]+\.)+[a-z]{2,63}$")
 
 DLC_BASE = "https://raw.githubusercontent.com/v2fly/domain-list-community/master/data/"
+PETER_LOWE_URL = "https://pgl.yoyo.org/adservers/serverlist.php?hostformat=plain&showintro=0&mimetype=plaintext"
 RUNETFREEDOM_RU_BLOCKED_URL = "https://raw.githubusercontent.com/runetfreedom/russia-blocked-geosite/release/ru-blocked.txt"
 MANUAL_RU_BLOCKED_FILE = SOURCES_DIR / "manual_ru_blocked.txt"
 
@@ -312,9 +313,24 @@ def load_manual_domains(file_path: Path) -> list[str]:
 
     return domains
 
+
 def build_ads() -> None:
-    rules = flatten_rules("category-ads-all")
-    domains = extract_plain_domains_from_rules(rules)
+    domains: set[str] = set()
+
+    # DLC category-ads-all
+    for rule in flatten_rules("category-ads-all"):
+        rule = rule.strip()
+        if not rule or rule.startswith(("full:", "keyword:", "regexp:", "domain:", "include:")):
+            continue
+        domain = normalize_text_domain(rule)
+        if domain:
+            domains.add(domain)
+
+    # Peter Lowe
+    for line in fetch_lines(PETER_LOWE_URL):
+        domain = normalize_text_domain(line)
+        if domain:
+            domains.add(domain)
 
     if not domains:
         raise RuntimeError("category-ads-all is empty")
