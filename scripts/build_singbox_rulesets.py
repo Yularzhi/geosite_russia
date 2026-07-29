@@ -20,6 +20,8 @@ RULE_PREFIXES = {
     "regexp:": "domain_regex",
 }
 
+SOURCE_FORMAT_VERSION = 4
+
 
 def strip_inline_comment(line: str) -> str:
     if "#" in line:
@@ -94,7 +96,7 @@ def build_rule_set(tag: str) -> dict[str, object]:
             rules.append({field: values})
 
     return {
-        "version": 5,
+        "version": SOURCE_FORMAT_VERSION,
         "rules": rules,
     }
 
