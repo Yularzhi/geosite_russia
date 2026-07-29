@@ -52,6 +52,10 @@ VIBER_EXTRA_DOMAINS = [
     "abtest.api.viber.com",
 ]
 
+ADS_EXCLUDED_DOMAINS = {
+    "yabs.yandex.ru",
+}
+
 CATEGORY_RU_EXTRA_DOMAINS = [
     "lk-new.licard.com",
     "1cfresh.com",
@@ -323,13 +327,13 @@ def build_ads() -> None:
         if not rule or rule.startswith(("full:", "keyword:", "regexp:", "domain:", "include:")):
             continue
         domain = normalize_text_domain(rule)
-        if domain:
+        if domain and domain not in ADS_EXCLUDED_DOMAINS:
             domains.add(domain)
 
     # Peter Lowe
     for line in fetch_lines(PETER_LOWE_URL):
         domain = normalize_text_domain(line)
-        if domain:
+        if domain and domain not in ADS_EXCLUDED_DOMAINS:
             domains.add(domain)
 
     if not domains:
