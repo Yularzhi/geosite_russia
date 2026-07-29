@@ -38,7 +38,7 @@ ru-blocked — объединённый список:
 category-ru — официальный список российских доменов из v2fly
 
 🚫 Реклама
-category-ads-all — список рекламы из runetfreedom (category-ads-all.txt)
+category-ads-all — официальный список рекламы из v2fly/domain-list-community
 
 📱 Сервисы
 telegram
@@ -150,7 +150,7 @@ geosite:category-ads-all
 
 - оптимизировано под низкое потребление памяти (~20–30 MB)
 - ru-blocked берётся из готового списка runetfreedom (уже очищен от RU доменов)
-- category-ads-all берётся из готового списка runetfreedom
+- category-ads-all берётся из v2fly/domain-list-community
 - отсутствуют лишние и дублирующие списки
 - все зависимости разворачиваются в плоский вид
 - полный контроль над составом списков
@@ -184,7 +184,7 @@ https://community.antifilter.download
 ## ⚠️ Примечания
 
 - ru-blocked — готовый список из runetfreedom (уже очищен от российских доменов)
-- category-ads-all — готовый список рекламы из runetfreedom
+- category-ads-all — готовый список рекламы из v2fly/domain-list-community
 - viber расширен доменами Rakuten
 - category-ads-all используется в полном развёрнутом виде
 - итоговый файл не содержит промежуточных тегов

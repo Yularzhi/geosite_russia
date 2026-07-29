@@ -22,7 +22,6 @@ DOMAIN_RE = re.compile(r"^(?:[a-z0-9-]+\.)+[a-z]{2,63}$")
 
 DLC_BASE = "https://raw.githubusercontent.com/v2fly/domain-list-community/master/data/"
 RUNETFREEDOM_RU_BLOCKED_URL = "https://raw.githubusercontent.com/runetfreedom/russia-blocked-geosite/release/ru-blocked.txt"
-RUNETFREEDOM_ADS_URL = "https://raw.githubusercontent.com/runetfreedom/russia-blocked-geosite/release/category-ads-all.txt"
 MANUAL_RU_BLOCKED_FILE = SOURCES_DIR / "manual_ru_blocked.txt"
 
 ROOT_TAG_SOURCE = {
@@ -314,12 +313,8 @@ def load_manual_domains(file_path: Path) -> list[str]:
     return domains
 
 def build_ads() -> None:
-    domains: set[str] = set()
-
-    for line in fetch_lines(RUNETFREEDOM_ADS_URL):
-        domain = normalize_dlc_domain(line)
-        if domain:
-            domains.add(domain)
+    rules = flatten_rules("category-ads-all")
+    domains = extract_plain_domains_from_rules(rules)
 
     if not domains:
         raise RuntimeError("category-ads-all is empty")
