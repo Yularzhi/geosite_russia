@@ -5,7 +5,7 @@
 [![Release Branch](https://img.shields.io/badge/release-branch-blue)](https://github.com/yularzhi/geosite_russia/tree/release)
 [![Raw geosite.dat](https://img.shields.io/badge/raw-geosite.dat-brightgreen)](https://raw.githubusercontent.com/yularzhi/geosite_russia/release/geosite.dat)
 
-Кастомный geosite.dat для Xray / Sing-box / Happ и других клиентов.
+Кастомный geosite.dat для Xray и набор `.srs` rule-set файлов для Sing-box / Happ и других клиентов.
 
 Основная цель проекта — создать лёгкий и эффективный набор доменных правил для работы в России:
 - обход блокировок
@@ -50,6 +50,9 @@ google
 supercell
 roblox
 
+🧩 Sing-box
+rule-set файлы в формате `.srs` для каждого тега из списка выше
+
 🔒 Системные
 private — локальные сети и приватные домены
 
@@ -72,6 +75,22 @@ private — локальные сети и приватные домены
 }
 ```
 
+Для Sing-box используйте `rule_set` и отдельные `.srs` файлы, например:
+```json
+{
+  "route": {
+    "rule_set": [
+      {
+        "tag": "category-ru",
+        "type": "remote",
+        "format": "binary",
+        "url": "https://raw.githubusercontent.com/yularzhi/geosite_russia/release/sing-box/category-ru.srs"
+      }
+    ]
+  }
+}
+```
+
 ## ⬇️ Скачать
 
 Актуальная версия:
@@ -79,6 +98,9 @@ https://raw.githubusercontent.com/yularzhi/geosite_russia/release/geosite.dat
 
 SHA256:
 https://raw.githubusercontent.com/yularzhi/geosite_russia/release/geosite.dat.sha256
+
+Sing-box rule-sets:
+https://raw.githubusercontent.com/yularzhi/geosite_russia/release/sing-box/category-ru.srs
 
 ## ⚙️ Использование
 
@@ -105,7 +127,7 @@ geosite:category-ads-all
 - скачиваются исходные списки из runetfreedom/russia-blocked-geosite
 - нормализуются домены
 - разворачиваются include зависимости из v2fly DLC
-- генерируется geosite.dat
+- генерируется geosite.dat и набор sing-box rule-set файлов
 - публикуется в ветку release
 
 Обновление происходит ежедневно.

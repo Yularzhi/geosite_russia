@@ -1,9 +1,14 @@
 from pathlib import Path
 from urllib.parse import urlparse
 import re
+import sys
 import requests
 
 ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(ROOT))
+
+from scripts.build_shared import ROOT_TAGS
+
 DATA_DIR = ROOT / "data"
 SOURCES_DIR = ROOT / "sources"
 
@@ -19,21 +24,6 @@ DLC_BASE = "https://raw.githubusercontent.com/v2fly/domain-list-community/master
 RUNETFREEDOM_RU_BLOCKED_URL = "https://raw.githubusercontent.com/runetfreedom/russia-blocked-geosite/release/ru-blocked.txt"
 RUNETFREEDOM_ADS_URL = "https://raw.githubusercontent.com/runetfreedom/russia-blocked-geosite/release/category-ads-all.txt"
 MANUAL_RU_BLOCKED_FILE = SOURCES_DIR / "manual_ru_blocked.txt"
-
-ROOT_TAGS = [
-    "category-ads-all",
-    "category-ru",
-    "telegram",
-    "viber",
-    "whatsapp",
-    "meta",
-    "facebook",
-    "google",
-    "supercell",
-    "roblox",
-    "apple",
-    "private",
-]
 
 ROOT_TAG_SOURCE = {
     "category-ru": "dlc",

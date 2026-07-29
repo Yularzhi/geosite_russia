@@ -27,13 +27,16 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version: "1.22"
+          go-version: "1.23.1"
 
       - name: Install Python dependencies
         run: pip install -r requirements.txt
 
       - name: Build source lists
         run: python scripts/build_lists.py
+
+      - name: Build sing-box rule-set sources
+        run: python scripts/build_singbox_rulesets.py --output-dir "$RUNNER_TEMP/singbox-source"
 
       - name: Build geosite.dat
         run: |
@@ -42,6 +45,20 @@ jobs:
           go mod download
           go run ./ --datapath=../data
           mv dlc.dat ../geosite.dat
+
+      - name: Install sing-box
+        run: |
+          go install github.com/sagernet/sing-box/cmd/sing-box@v1.14.0
+          echo "$(go env GOPATH)/bin" >> "$GITHUB_PATH"
+
+      - name: Build sing-box rule-sets
+        run: |
+          mkdir -p sing-box
+          for source in "$RUNNER_TEMP"/singbox-source/*.json; do
+            name="$(basename "$source" .json)"
+            sing-box rule-set compile --output "sing-box/${name}.srs" "$source"
+            sha256sum "sing-box/${name}.srs" > "sing-box/${name}.srs.sha256"
+          done
 
       - name: Create checksum
         run: sha256sum geosite.dat > geosite.dat.sha256
@@ -65,6 +82,7 @@ jobs:
           find release-branch -mindepth 1 -maxdepth 1 ! -name '.git' -exec rm -rf {} +
           cp geosite.dat release-branch/geosite.dat
           cp geosite.dat.sha256 release-branch/geosite.dat.sha256
+          cp -R sing-box release-branch/sing-box
 
           cd release-branch
           git config user.name "github-actions"
@@ -82,24 +100,26 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh release view "${RELEASE_TAG}" >/dev/null 2>&1 && \
-          gh release delete-asset "${RELEASE_TAG}" geosite.dat -y || true
-          gh release view "${RELEASE_TAG}" >/dev/null 2>&1 && \
-          gh release delete-asset "${RELEASE_TAG}" geosite.dat.sha256 -y || true
+          for asset in geosite.dat geosite.dat.sha256 sing-box/*.srs sing-box/*.srs.sha256; do
+            gh release view "${RELEASE_TAG}" >/dev/null 2>&1 && \
+            gh release delete-asset "${RELEASE_TAG}" "$(basename "$asset")" -y || true
+          done
 
       - name: Create or update GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ env.RELEASE_TAG }}
-          name: Latest geosite.dat
+          name: Latest geosite.dat and sing-box rule-sets
           body: |
-            Automated latest build of geosite.dat
+            Automated latest build of geosite.dat and sing-box rule-sets
 
             Raw URL:
             https://raw.githubusercontent.com/yularzhi/geosite_russia/release/geosite.dat
           files: |
             geosite.dat
             geosite.dat.sha256
+            sing-box/*.srs
+            sing-box/*.srs.sha256
           make_latest: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -107,7 +127,9 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: geosite-dat
+          name: geosite-and-sing-box
           path: |
             geosite.dat
             geosite.dat.sha256
+            sing-box/*.srs
+            sing-box/*.srs.sha256
