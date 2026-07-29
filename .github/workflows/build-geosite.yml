@@ -48,7 +48,7 @@ jobs:
 
       - name: Install sing-box
         run: |
-          go install github.com/sagernet/sing-box/cmd/sing-box@v1.14.0
+          go install github.com/sagernet/sing-box/cmd/sing-box@main
           echo "$(go env GOPATH)/bin" >> "$GITHUB_PATH"
 
       - name: Build sing-box rule-sets
