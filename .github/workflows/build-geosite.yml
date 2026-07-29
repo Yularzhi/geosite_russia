@@ -13,7 +13,7 @@ jobs:
     permissions:
       contents: write
     env:
-      RELEASE_TAG: latest-geosite
+      RELEASE_TAG: latest-geosite-${{ github.run_number }}-${{ github.run_attempt }}
 
     steps:
       - name: Checkout main
@@ -91,19 +91,10 @@ jobs:
           git commit -m "chore: publish latest geosite.dat" || echo "No changes to commit"
           git push
 
-      - name: Create or update release tag
+      - name: Create release tag
         run: |
-          git tag -f "${RELEASE_TAG}"
-          git push origin "refs/tags/${RELEASE_TAG}" --force
-
-      - name: Delete existing release assets if release exists
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          for asset in geosite.dat geosite.dat.sha256 sing-box/*.srs sing-box/*.srs.sha256; do
-            gh release view "${RELEASE_TAG}" >/dev/null 2>&1 && \
-            gh release delete-asset "${RELEASE_TAG}" "$(basename "$asset")" -y || true
-          done
+          git tag "${RELEASE_TAG}"
+          git push origin "refs/tags/${RELEASE_TAG}"
 
       - name: Create or update GitHub Release
         uses: softprops/action-gh-release@v2
