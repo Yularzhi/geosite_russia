@@ -1,6 +1,9 @@
+# ─── App Store / Media Services CDN ────────────────────────────────
 mzstatic.com
 itunes.apple.com
 apps.apple.com
+
+# ─── Software Update CDN ───────────────────────────────────────────
 appldnld.apple.com
 updates-http.cdn-apple.com
 updates.cdn-apple.com
@@ -8,11 +11,83 @@ gg.apple.com
 gs.apple.com
 mesu.apple.com
 gdmf.apple.com
+
+# ─── macOS Update CDN ──────────────────────────────────────────────
 swcdn.apple.com
 swdist.apple.com
 swdownload.apple.com
 swscan.apple.com
+
+# ─── macOS Recovery ────────────────────────────────────────────────
 oscdn.apple.com
 osrecovery.apple.com
+
+# ─── Apple Content Delivery (Guzzoni) ──────────────────────────────
+guzzoni.apple.com
+guzzoni.smoot.apple.com
+guzzoni-apple-com.v.aaplimg.com
+
+# ─── Apple CDN Infrastructure ──────────────────────────────────────
 aaplimg.com
 cdn-apple.com
+
+# ─── CDN Origin / Akamai ───────────────────────────────────────────
+cl1-cdn.origin-apple.com.akadns.net
+cl2-cdn.origin-apple.com.akadns.net
+cl3-cdn.origin-apple.com.akadns.net
+cl4-cdn.origin-apple.com.akadns.net
+cl5-cdn.origin-apple.com.akadns.net
+cl1.apple.com
+cl2.apple.com
+cl3.apple.com
+cl4.apple.com
+cl5.apple.com
+
+# ─── Client Flow / Stats ───────────────────────────────────────────
+clientflow.apple.com
+cstat.apple.com
+cstat.cdn-apple.com
+static.gc.apple.com
+
+# ─── Software Catalog ──────────────────────────────────────────────
+swcatalog.apple.com
+swscan-cdn.apple.com.akadns.net
+
+# ─── Content Delivery Service ──────────────────────────────────────
+cds.apple.com
+cds.apple.com.akadns.net
+cdsassets.apple.com
+cds-cdn.v.aaplimg.com
+
+# ─── Developer Downloads ───────────────────────────────────────────
+adcdownload.apple.com
+devimages-cdn.apple.com
+devstreaming-cdn.apple.com
+download.developer.apple.com
+iphone-ld.apple.com
+iphone-ld.origin-apple.com.akadns.net
+
+# ─── ML / Assets CDN ───────────────────────────────────────────────
+ml.cdn-apple.com
+publicassets.cdn-apple.com
+store.storeimages.cdn-apple.com
+store.storeimages.apple.com.akadns.net
+swcdn.g.aaplimg.com
+appldnld.g.aaplimg.com
+
+# ─── Maps & Weather ────────────────────────────────────────────────
+maps.apple.com
+apple-mapkit.com
+weatherkit.apple.com
+weather-data.apple.com
+weather-map.apple.com
+weather-map2.apple.com
+cdn.apple-mapkit.com
+cdn1.apple-mapkit.com
+cdn2.apple-mapkit.com
+cdn3.apple-mapkit.com
+cdn4.apple-mapkit.com
+
+# ─── Swallow CDN ───────────────────────────────────────────────────
+swallow.apple.com
+swallow-apple-com.v.aaplimg.com
