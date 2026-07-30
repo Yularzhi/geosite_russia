@@ -24,6 +24,7 @@ DLC_BASE = "https://raw.githubusercontent.com/v2fly/domain-list-community/master
 PETER_LOWE_URL = "https://pgl.yoyo.org/adservers/serverlist.php?hostformat=plain&showintro=0&mimetype=plaintext"
 RUNETFREEDOM_RU_BLOCKED_URL = "https://raw.githubusercontent.com/runetfreedom/russia-blocked-geosite/release/ru-blocked.txt"
 MANUAL_RU_BLOCKED_FILE = SOURCES_DIR / "manual_ru_blocked.txt"
+APPLE_DIRECT_FILE = SOURCES_DIR / "apple.txt"
 
 ROOT_TAG_SOURCE = {
     "category-ru": "dlc",
@@ -61,38 +62,16 @@ CATEGORY_RU_EXTRA_DOMAINS = [
     "1cfresh.com",
 ]
 
-APPLE_DIRECT_DOMAINS = [
-    # ── App Store / Media Services CDN ────────────────────────────────
-    # Скачивание приложений, книг, музыки, фильмов
-    "mzstatic.com",             # CDN Apple Media Services (App Store контент)
-    "itunes.apple.com",         # iTunes Store / App Store (контент)
-    "apps.apple.com",           # App Store (контент: приложения, книги, музыка)
-
-    # ── Software Update CDN ───────────────────────────────────────────
-    # Скачивание и обновления ОС (iOS, iPadOS, macOS, watchOS, tvOS)
-    "appldnld.apple.com",       # Прошивки iOS/iPadOS/watchOS/visionOS + carrier bundles
-    "updates-http.cdn-apple.com",  # Обновления ПО (HTTP, порт 80)
-    "updates.cdn-apple.com",    # Обновления ПО (HTTPS, порт 443)
-    "gg.apple.com",             # Обновления iOS/iPadOS/tvOS/watchOS/macOS
-    "gs.apple.com",             # TSS (Signature Service) обновлений ОС
-    "mesu.apple.com",           # Каталоги обновлений ПО (хостит update-каталоги)
-    "gdmf.apple.com",           # OTA-каталог обновлений (Pallas)
-
-    # ── macOS Update CDN ──────────────────────────────────────────────
-    # Только скачивание файлов обновлений macOS
-    "swcdn.apple.com",          # CDN обновлений macOS
-    "swdist.apple.com",         # Дистрибуция обновлений macOS
-    "swdownload.apple.com",     # Загрузка обновлений macOS (поддерживает прокси)
-    "swscan.apple.com",         # Сканирование обновлений macOS
-
-    # ── macOS Recovery ────────────────────────────────────────────────
-    "oscdn.apple.com",          # macOS Recovery (загрузка recovery-образов)
-    "osrecovery.apple.com",     # macOS Recovery (восстановление системы)
-
-    # ── Apple CDN инфраструктура ──────────────────────────────────────
-    "aaplimg.com",              # CDN маршрутизации дата-центров (Akamai → Apple CDN)
-    "cdn-apple.com",            # CDN для прошивок и контента
-]
+def load_apple_direct_domains() -> list[str]:
+    """Load apple direct domains from sources/apple.txt"""
+    if not APPLE_DIRECT_FILE.exists():
+        return []
+    domains: list[str] = []
+    for raw_line in APPLE_DIRECT_FILE.read_text(encoding="utf-8").splitlines():
+        normalized = normalize_text_domain(raw_line)
+        if normalized:
+            domains.append(normalized)
+    return domains
 
 def fetch_text(url: str) -> str:
     resp = SESSION.get(url, timeout=90)
@@ -373,7 +352,7 @@ def build_flat_root_tags() -> None:
             rules = flatten_rules(tag)
             rules.extend(CATEGORY_RU_EXTRA_DOMAINS)
         elif tag == "apple":
-            rules = APPLE_DIRECT_DOMAINS
+            rules = load_apple_direct_domains()
         else:
             rules = flatten_rules(tag)
 
