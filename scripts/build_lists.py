@@ -58,6 +58,7 @@ ADS_EXCLUDED_DOMAINS = {
 }
 
 CATEGORY_RU_EXTRA_DOMAINS = [
+    "licard.com",
     "lk-new.licard.com",
     "1cfresh.com",
 ]
