@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import re
+import shutil
 import sys
 from pathlib import Path
 from urllib.parse import urlparse
@@ -107,16 +108,13 @@ def normalize_text_domain(line: str) -> str | None:
     if line.startswith("#") or line.startswith("//") or line.startswith(";"):
         return None
 
-    line = line.replace("*://*.", "")
-    line = line.replace("*://", "")
-    line = line.replace("/*", "")
-    line = line.replace("/", "")
-
     line = line.replace("\t", " ").split(" ")[0].strip()
 
     if line.startswith("http://") or line.startswith("https://"):
         parsed = urlparse(line)
         line = parsed.hostname or ""
+    else:
+        line = line.split("://", 1)[-1]
 
     line = line.strip().strip(".")
     if line.startswith("*."):
@@ -124,7 +122,7 @@ def normalize_text_domain(line: str) -> str | None:
     if line.startswith("."):
         line = line[1:]
 
-    line = line.split("/")[0]
+    line = line.split("/", 1)[0]
 
     if ":" in line and line.count(":") == 1:
         host, port = line.split(":", 1)
@@ -160,7 +158,9 @@ def write_tag(tag: str, lines: list[str]) -> None:
 
 def cleanup_data_dir() -> None:
     for item in DATA_DIR.iterdir():
-        if item.is_file():
+        if item.is_dir():
+            shutil.rmtree(item)
+        else:
             item.unlink()
 
 

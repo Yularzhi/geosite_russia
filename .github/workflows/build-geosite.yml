@@ -42,6 +42,11 @@ jobs:
       - name: Build sing-box rule-set sources
         run: python scripts/build_singbox_rulesets.py --output-dir "$RUNNER_TEMP/singbox-source"
 
+      - name: Prepare release worktree
+        run: |
+          git fetch origin release
+          git worktree add -B release "$RUNNER_TEMP/release-branch" origin/release
+
       - name: Build geosite.dat
         run: |
           git clone https://github.com/v2fly/domain-list-community.git dlc
@@ -73,32 +78,27 @@ jobs:
           git config user.email "github-actions@github.com"
           git add data
           git diff --cached --quiet || git commit -m "chore: update generated source lists"
-          git push
-
-      - name: Checkout release branch
-        uses: actions/checkout@v4
-        with:
-          ref: release
-          path: release-branch
 
       - name: Publish files to release branch
         run: |
-          find release-branch -mindepth 1 -maxdepth 1 ! -name '.git' -exec rm -rf {} +
-          cp geosite.dat release-branch/geosite.dat
-          cp geosite.dat.sha256 release-branch/geosite.dat.sha256
-          cp -R sing-box release-branch/sing-box
+          find "$RUNNER_TEMP/release-branch" -mindepth 1 -maxdepth 1 ! -name '.git' -exec rm -rf {} +
+          cp geosite.dat "$RUNNER_TEMP/release-branch/geosite.dat"
+          cp geosite.dat.sha256 "$RUNNER_TEMP/release-branch/geosite.dat.sha256"
+          cp -R sing-box "$RUNNER_TEMP/release-branch/sing-box"
 
-          cd release-branch
+          cd "$RUNNER_TEMP/release-branch"
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
           git add -A
-          git commit -m "chore: publish latest geosite.dat" || echo "No changes to commit"
-          git push
+          git diff --cached --quiet || git commit -m "chore: publish latest geosite.dat"
 
       - name: Create release tag
         run: |
           git tag "${RELEASE_TAG}"
-          git push origin "refs/tags/${RELEASE_TAG}"
+
+      - name: Push changes atomically
+        run: |
+          git push --atomic origin main release "refs/tags/${RELEASE_TAG}"
 
       - name: Create or update GitHub Release
         uses: softprops/action-gh-release@v2
