@@ -48,10 +48,10 @@ def parse_rule(line: str) -> tuple[str, str] | None:
         return "domain_suffix", value
 
     if line.startswith(("include:", "geosite:")):
-        raise ValueError(f"Unsupported nested rule line in generated data: {line}")
+        return None
 
     if ":" in line:
-        raise ValueError(f"Unsupported rule line: {line}")
+        return None
 
     return "domain_suffix", line
 

@@ -1,8 +1,12 @@
-from pathlib import Path
-from urllib.parse import urlparse
+from __future__ import annotations
+
 import re
 import sys
+from pathlib import Path
+from urllib.parse import urlparse
+
 import requests
+from urllib3.util.retry import Retry
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
@@ -18,11 +22,23 @@ SOURCES_DIR.mkdir(parents=True, exist_ok=True)
 SESSION = requests.Session()
 SESSION.headers.update({"User-Agent": "custom-geosite-builder/1.0"})
 
+retry_strategy = Retry(
+    total=3,
+    backoff_factor=1,
+    status_forcelist=[429, 500, 502, 503, 504],
+    allowed_methods=["GET"],
+)
+adapter = requests.adapters.HTTPAdapter(max_retries=retry_strategy)
+SESSION.mount("https://", adapter)
+SESSION.mount("http://", adapter)
+
 DOMAIN_RE = re.compile(r"^(?:[a-z0-9-]+\.)+[a-z]{2,63}$")
 
 DLC_BASE = "https://raw.githubusercontent.com/v2fly/domain-list-community/master/data/"
 PETER_LOWE_URL = "https://pgl.yoyo.org/adservers/serverlist.php?hostformat=plain&showintro=0&mimetype=plaintext"
-RUNETFREEDOM_RU_BLOCKED_URL = "https://raw.githubusercontent.com/runetfreedom/russia-blocked-geosite/release/ru-blocked.txt"
+RUNETFREEDOM_RU_BLOCKED_URL = (
+    "https://raw.githubusercontent.com/runetfreedom/russia-blocked-geosite/release/ru-blocked.txt"
+)
 MANUAL_RU_BLOCKED_FILE = SOURCES_DIR / "manual_ru_blocked.txt"
 APPLE_DIRECT_FILE = SOURCES_DIR / "apple.txt"
 
@@ -63,6 +79,7 @@ CATEGORY_RU_EXTRA_DOMAINS = [
     "1cfresh.com",
 ]
 
+
 def load_apple_direct_domains() -> list[str]:
     """Load apple direct domains from sources/apple.txt"""
     if not APPLE_DIRECT_FILE.exists():
@@ -74,14 +91,12 @@ def load_apple_direct_domains() -> list[str]:
             domains.append(normalized)
     return domains
 
-def fetch_text(url: str) -> str:
-    resp = SESSION.get(url, timeout=90)
+
+def fetch_text(url: str, *, timeout: int = 90) -> str:
+    """Fetch text content from URL with automatic retry on transient errors."""
+    resp = SESSION.get(url, timeout=timeout)
     resp.raise_for_status()
     return resp.text
-
-
-def fetch_lines(url: str) -> list[str]:
-    return fetch_text(url).splitlines()
 
 
 def normalize_text_domain(line: str) -> str | None:
@@ -311,7 +326,7 @@ def build_ads() -> None:
             domains.add(domain)
 
     # Peter Lowe
-    for line in fetch_lines(PETER_LOWE_URL):
+    for line in fetch_text(PETER_LOWE_URL).splitlines():
         domain = normalize_text_domain(line)
         if domain and domain not in ADS_EXCLUDED_DOMAINS:
             domains.add(domain)
@@ -322,10 +337,12 @@ def build_ads() -> None:
     print(f"ADS total: {len(domains)}")
     write_tag("category-ads-all", sorted(domains))
 
+
 def build_ru_blocked() -> None:
+    """Build ru-blocked list from upstream sources + manual domains."""
     domains: set[str] = set()
 
-    for line in fetch_lines(RUNETFREEDOM_RU_BLOCKED_URL):
+    for line in fetch_text(RUNETFREEDOM_RU_BLOCKED_URL).splitlines():
         domain = normalize_dlc_domain(line)
         if domain:
             domains.add(domain)
@@ -336,6 +353,7 @@ def build_ru_blocked() -> None:
             domains.add(normalized)
 
     write_tag("ru-blocked", sorted(domains))
+    print(f"RU blocked total: {len(domains)}")
 
 
 def build_flat_root_tags() -> None:

@@ -1,0 +1,36 @@
+name: Lint Python code
+
+on:
+  push:
+    paths:
+      - "**/*.py"
+      - "*.toml"
+  pull_request:
+    paths:
+      - "**/*.py"
+      - "*.toml"
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install ruff
+        run: pip install "ruff>=0.4.0"
+
+      - name: Run ruff linter
+        run: ruff check --output-format=github
+        if: always()
+
+      - name: Run ruff formatter check
+        run: ruff format --check
+        if: always()
