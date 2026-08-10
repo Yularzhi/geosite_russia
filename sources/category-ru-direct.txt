@@ -1,0 +1,29 @@
+# category-ru direct
+# Дополнительные домены для DIRECT-подключения
+# Корневой домен также покрывает его поддомены при маршрутизации.
+
+# Licard / 1C Fresh
+licard.com
+lk-new.licard.com
+1cfresh.com
+
+# BlueStacks
+bluestacks.com
+bluestacks.biz
+bluestacksapp.com
+bluestacks.net
+bluestackscdn.com
+bluestacksads.com
+bluestacksdata.com
+bluestacksengine.com
+bluestacksapi.com
+bluestackscloud.com
+api.bluestacks.com
+bsync.bluestacks.com
+cloud.bluestacks.com
+api-1.bluestacks.com
+api-2.bluestacks.com
+api3-1.bluestacks.com
+api3-2.bluestacks.com
+download.bluestacks.com
+updater.bluestacks.com

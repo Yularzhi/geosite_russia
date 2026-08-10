@@ -36,12 +36,12 @@ SESSION.mount("http://", adapter)
 DOMAIN_RE = re.compile(r"^(?:[a-z0-9-]+\.)+[a-z]{2,63}$")
 
 DLC_BASE = "https://raw.githubusercontent.com/v2fly/domain-list-community/master/data/"
+PROXY_URL = "https://raw.githubusercontent.com/Loyalsoldier/surge-rules/release/proxy.txt"
+ANTIFILTER_RU_BLOCKED_URL = "https://community.antifilter.download/list/domains.txt"
 PETER_LOWE_URL = "https://pgl.yoyo.org/adservers/serverlist.php?hostformat=plain&showintro=0&mimetype=plaintext"
-RUNETFREEDOM_RU_BLOCKED_URL = (
-    "https://raw.githubusercontent.com/runetfreedom/russia-blocked-geosite/release/ru-blocked.txt"
-)
 MANUAL_RU_BLOCKED_FILE = SOURCES_DIR / "manual_ru_blocked.txt"
 APPLE_DIRECT_FILE = SOURCES_DIR / "apple.txt"
+CATEGORY_RU_DIRECT_FILE = SOURCES_DIR / "category-ru-direct.txt"
 
 ROOT_TAG_SOURCE = {
     "category-ru": "dlc",
@@ -56,29 +56,34 @@ ROOT_TAG_SOURCE = {
     "private": "dlc",
 }
 
-VIBER_EXTRA_DOMAINS = [
-    "api.viber.com",
-    "invite.viber.com",
-    "ads.viber.com",
-    "market.viber.com",
-    "share.viber.com",
-    "unv.viber.com",
-    "pg-vb.cdn.viber.com",
-    "vbr.com",
-    "abff.viber.com",
-    "explore.api.viber.com",
-    "abtest.api.viber.com",
-]
+RU_EXCLUDED_SUFFIXES = {
+    "vk.ru",
+    "vk.com",
+    "vkvideo.ru",
+    "vkuser.net",
+    "vkuservideo.net",
+    "mycdn.me",
+    "mail.ru",
+    "inbox.ru",
+    "list.ru",
+    "bk.ru",
+    "ok.ru",
+    "odnoklassniki.ru",
+    "yandex.ru",
+    "yandex.net",
+    "ya.ru",
+    "dzen.ru",
+    "rutube.ru",
+    "rambler.ru",
+    "kinoafisha.info",
+    "cdn-vk.ru",
+}
+
+RU_TLDS = (".ru", ".su", ".xn--p1ai")
 
 ADS_EXCLUDED_DOMAINS = {
     "yabs.yandex.ru",
 }
-
-CATEGORY_RU_EXTRA_DOMAINS = [
-    "licard.com",
-    "lk-new.licard.com",
-    "1cfresh.com",
-]
 
 
 def load_apple_direct_domains() -> list[str]:
@@ -93,11 +98,27 @@ def load_apple_direct_domains() -> list[str]:
     return domains
 
 
+def load_category_ru_direct_domains() -> list[str]:
+    """Load category-ru direct domains from sources/category-ru-direct.txt"""
+    if not CATEGORY_RU_DIRECT_FILE.exists():
+        return []
+    domains: list[str] = []
+    for raw_line in CATEGORY_RU_DIRECT_FILE.read_text(encoding="utf-8").splitlines():
+        normalized = normalize_text_domain(raw_line)
+        if normalized:
+            domains.append(normalized)
+    return domains
+
+
 def fetch_text(url: str, *, timeout: int = 90) -> str:
     """Fetch text content from URL with automatic retry on transient errors."""
     resp = SESSION.get(url, timeout=timeout)
     resp.raise_for_status()
     return resp.text
+
+
+def fetch_lines(url: str) -> list[str]:
+    return fetch_text(url).splitlines()
 
 
 def normalize_text_domain(line: str) -> str | None:
@@ -133,21 +154,6 @@ def normalize_text_domain(line: str) -> str | None:
         return None
 
     return line if DOMAIN_RE.match(line) else None
-
-
-def normalize_dlc_domain(line: str) -> str | None:
-    """Parse DLC-format lines like 'domain:example.com' or '@ads domain:example.com'."""
-    line = line.strip()
-    if not line or line.startswith("#"):
-        return None
-
-    for part in line.split():
-        if part.startswith("domain:"):
-            domain = part[7:].strip()
-            if domain and DOMAIN_RE.match(domain):
-                return domain
-
-    return None
 
 
 def write_tag(tag: str, lines: list[str]) -> None:
@@ -299,6 +305,14 @@ def extract_plain_domains_from_rules(rules: list[str]) -> set[str]:
     return result
 
 
+def is_ru_excluded_domain(domain: str) -> bool:
+    for suffix in RU_EXCLUDED_SUFFIXES:
+        if domain == suffix or domain.endswith("." + suffix):
+            return True
+
+    return domain.endswith(RU_TLDS)
+
+
 def load_manual_domains(file_path: Path) -> list[str]:
     if not file_path.exists():
         return []
@@ -339,13 +353,21 @@ def build_ads() -> None:
 
 
 def build_ru_blocked() -> None:
-    """Build ru-blocked list from upstream sources + manual domains."""
+    """Build ru-blocked from legacy upstream sources plus manual domains."""
     domains: set[str] = set()
 
-    for line in fetch_text(RUNETFREEDOM_RU_BLOCKED_URL).splitlines():
-        domain = normalize_dlc_domain(line)
+    for line in fetch_lines(ANTIFILTER_RU_BLOCKED_URL):
+        domain = normalize_text_domain(line)
         if domain:
             domains.add(domain)
+
+    category_ru_domains = extract_plain_domains_from_rules(flatten_rules("category-ru"))
+
+    for line in fetch_lines(PROXY_URL):
+        domain = normalize_text_domain(line)
+        if not domain or domain in category_ru_domains or is_ru_excluded_domain(domain):
+            continue
+        domains.add(domain)
 
     for domain in load_manual_domains(MANUAL_RU_BLOCKED_FILE):
         normalized = normalize_text_domain(domain)
@@ -366,10 +388,9 @@ def build_flat_root_tags() -> None:
         if tag == "viber":
             rules = flatten_rules("viber")
             rules.extend(flatten_rules("rakuten"))
-            rules.extend(VIBER_EXTRA_DOMAINS)
         elif tag == "category-ru":
             rules = flatten_rules(tag)
-            rules.extend(CATEGORY_RU_EXTRA_DOMAINS)
+            rules.extend(load_category_ru_direct_domains())
         elif tag == "apple":
             rules = load_apple_direct_domains()
         else:
