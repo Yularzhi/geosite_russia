@@ -12,7 +12,7 @@ from urllib3.util.retry import Retry
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
-from scripts.build_shared import ROOT_TAGS
+from scripts.build_shared import ROOT_TAGS, load_domain_file, strip_inline_comment
 
 DATA_DIR = ROOT / "data"
 SOURCES_DIR = ROOT / "sources"
@@ -88,26 +88,12 @@ ADS_EXCLUDED_DOMAINS = {
 
 def load_apple_direct_domains() -> list[str]:
     """Load apple direct domains from sources/apple.txt"""
-    if not APPLE_DIRECT_FILE.exists():
-        return []
-    domains: list[str] = []
-    for raw_line in APPLE_DIRECT_FILE.read_text(encoding="utf-8").splitlines():
-        normalized = normalize_text_domain(raw_line)
-        if normalized:
-            domains.append(normalized)
-    return domains
+    return load_domain_file(APPLE_DIRECT_FILE, normalize_text_domain)
 
 
 def load_category_ru_direct_domains() -> list[str]:
     """Load category-ru direct domains from sources/category-ru-direct.txt"""
-    if not CATEGORY_RU_DIRECT_FILE.exists():
-        return []
-    domains: list[str] = []
-    for raw_line in CATEGORY_RU_DIRECT_FILE.read_text(encoding="utf-8").splitlines():
-        normalized = normalize_text_domain(raw_line)
-        if normalized:
-            domains.append(normalized)
-    return domains
+    return load_domain_file(CATEGORY_RU_DIRECT_FILE, normalize_text_domain)
 
 
 def fetch_text(url: str, *, timeout: int = 90) -> str:
@@ -168,12 +154,6 @@ def cleanup_data_dir() -> None:
             shutil.rmtree(item)
         else:
             item.unlink()
-
-
-def strip_inline_comment(line: str) -> str:
-    if "#" in line:
-        line = line.split("#", 1)[0]
-    return line.strip()
 
 
 def split_attrs(line: str) -> tuple[str, set[str]]:
@@ -313,20 +293,6 @@ def is_ru_excluded_domain(domain: str) -> bool:
     return domain.endswith(RU_TLDS)
 
 
-def load_manual_domains(file_path: Path) -> list[str]:
-    if not file_path.exists():
-        return []
-
-    domains: list[str] = []
-    for raw_line in file_path.read_text(encoding="utf-8").splitlines():
-        line = strip_inline_comment(raw_line)
-        if not line:
-            continue
-        domains.append(line)
-
-    return domains
-
-
 def build_ads() -> None:
     domains: set[str] = set()
 
@@ -369,10 +335,8 @@ def build_ru_blocked() -> None:
             continue
         domains.add(domain)
 
-    for domain in load_manual_domains(MANUAL_RU_BLOCKED_FILE):
-        normalized = normalize_text_domain(domain)
-        if normalized:
-            domains.add(normalized)
+    for domain in load_domain_file(MANUAL_RU_BLOCKED_FILE, normalize_text_domain):
+        domains.add(domain)
 
     write_tag("ru-blocked", sorted(domains))
     print(f"RU blocked total: {len(domains)}")

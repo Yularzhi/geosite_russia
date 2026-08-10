@@ -3,16 +3,15 @@ from __future__ import annotations
 import argparse
 import json
 import shutil
+import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 DATA_DIR = ROOT / "data"
 
-import sys
-
 sys.path.insert(0, str(ROOT))
 
-from scripts.build_shared import ROOT_TAGS
+from scripts.build_shared import ROOT_TAGS, strip_inline_comment
 
 RULE_PREFIXES = {
     "full:": "domain",
@@ -21,12 +20,6 @@ RULE_PREFIXES = {
 }
 
 SOURCE_FORMAT_VERSION = 4
-
-
-def strip_inline_comment(line: str) -> str:
-    if "#" in line:
-        line = line.split("#", 1)[0]
-    return line.strip()
 
 
 def parse_rule(line: str) -> tuple[str, str] | None:
