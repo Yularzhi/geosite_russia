@@ -235,7 +235,7 @@ def flatten_rules(
 
     try:
         text = fetch_text(get_tag_url(tag))
-    except requests.HTTPError as e:
+    except requests.RequestException as e:
         print(f"Warning: skip missing DLC include: {tag} ({e})")
         return []
 
@@ -306,10 +306,13 @@ def build_ads() -> None:
             domains.add(domain)
 
     # Peter Lowe
-    for line in fetch_text(PETER_LOWE_URL).splitlines():
-        domain = normalize_text_domain(line)
-        if domain and domain not in ADS_EXCLUDED_DOMAINS:
-            domains.add(domain)
+    try:
+        for line in fetch_text(PETER_LOWE_URL).splitlines():
+            domain = normalize_text_domain(line)
+            if domain and domain not in ADS_EXCLUDED_DOMAINS:
+                domains.add(domain)
+    except requests.RequestException as e:
+        print(f"Warning: Failed to fetch Peter Lowe list from {PETER_LOWE_URL}: {e}")
 
     if not domains:
         raise RuntimeError("category-ads-all is empty")
@@ -322,18 +325,24 @@ def build_ru_blocked() -> None:
     """Build ru-blocked from legacy upstream sources plus manual domains."""
     domains: set[str] = set()
 
-    for line in fetch_lines(ANTIFILTER_RU_BLOCKED_URL):
-        domain = normalize_text_domain(line)
-        if domain:
-            domains.add(domain)
+    try:
+        for line in fetch_lines(ANTIFILTER_RU_BLOCKED_URL):
+            domain = normalize_text_domain(line)
+            if domain:
+                domains.add(domain)
+    except requests.RequestException as e:
+        print(f"Warning: Failed to fetch antifilter list from {ANTIFILTER_RU_BLOCKED_URL}: {e}")
 
     category_ru_domains = extract_plain_domains_from_rules(flatten_rules("category-ru"))
 
-    for line in fetch_lines(PROXY_URL):
-        domain = normalize_text_domain(line)
-        if not domain or domain in category_ru_domains or is_ru_excluded_domain(domain):
-            continue
-        domains.add(domain)
+    try:
+        for line in fetch_lines(PROXY_URL):
+            domain = normalize_text_domain(line)
+            if not domain or domain in category_ru_domains or is_ru_excluded_domain(domain):
+                continue
+            domains.add(domain)
+    except requests.RequestException as e:
+        print(f"Warning: Failed to fetch proxy list from {PROXY_URL}: {e}")
 
     for domain in load_domain_file(MANUAL_RU_BLOCKED_FILE, normalize_text_domain):
         domains.add(domain)
