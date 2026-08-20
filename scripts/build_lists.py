@@ -109,14 +109,23 @@ def fetch_lines(url: str) -> list[str]:
 
 
 def normalize_text_domain(line: str) -> str | None:
-    line = line.strip().lower()
+    line = strip_inline_comment(line).strip().lower()
 
     if not line:
         return None
     if line.startswith("#") or line.startswith("//") or line.startswith(";"):
         return None
 
-    line = line.replace("\t", " ").split(" ")[0].strip()
+    parts = line.split()
+    if not parts:
+        return None
+
+    if len(parts) >= 2 and parts[0] in ("127.0.0.1", "0.0.0.0", "::1", "::"):
+        line = parts[1]
+    else:
+        line = parts[0]
+
+    line = line.strip()
 
     if line.startswith("http://") or line.startswith("https://"):
         parsed = urlparse(line)
@@ -137,7 +146,7 @@ def normalize_text_domain(line: str) -> str | None:
         if port.isdigit():
             line = host
 
-    if not line or "_" in line or line.endswith(".local"):
+    if not line or "_" in line or line.endswith(".local") or line == "localhost":
         return None
 
     return line if DOMAIN_RE.match(line) else None
