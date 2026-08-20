@@ -38,7 +38,7 @@ DOMAIN_RE = re.compile(r"^(?:[a-z0-9-]+\.)+[a-z]{2,63}$")
 DLC_BASE = "https://raw.githubusercontent.com/v2fly/domain-list-community/master/data/"
 PROXY_URL = "https://raw.githubusercontent.com/Loyalsoldier/surge-rules/release/proxy.txt"
 ANTIFILTER_RU_BLOCKED_URL = "https://community.antifilter.download/list/domains.txt"
-ADAWAY_URL = "https://adaway.org/hosts.txt"
+HAGEZI_LIGHT_URL = "https://raw.githubusercontent.com/hagezi/dns-blocklists/main/domains/light.txt"
 PETER_LOWE_URL = "https://pgl.yoyo.org/adservers/serverlist.php?hostformat=plain&showintro=0&mimetype=plaintext"
 MANUAL_RU_BLOCKED_FILE = SOURCES_DIR / "manual_ru_blocked.txt"
 APPLE_DIRECT_FILE = SOURCES_DIR / "apple.txt"
@@ -315,14 +315,14 @@ def build_ads() -> None:
         if domain and domain not in ADS_EXCLUDED_DOMAINS:
             domains.add(domain)
 
-    # AdAway
+    # HaGeZi Light
     try:
-        for line in fetch_text(ADAWAY_URL).splitlines():
+        for line in fetch_text(HAGEZI_LIGHT_URL).splitlines():
             domain = normalize_text_domain(line)
             if domain and domain not in ADS_EXCLUDED_DOMAINS:
                 domains.add(domain)
     except requests.RequestException as e:
-        print(f"Warning: Failed to fetch AdAway list from {ADAWAY_URL}: {e}")
+        print(f"Warning: Failed to fetch HaGeZi Light list from {HAGEZI_LIGHT_URL}: {e}")
 
     # Peter Lowe
     try:
