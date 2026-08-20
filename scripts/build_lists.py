@@ -39,9 +39,10 @@ DLC_BASE = "https://raw.githubusercontent.com/v2fly/domain-list-community/master
 PROXY_URL = "https://raw.githubusercontent.com/Loyalsoldier/surge-rules/release/proxy.txt"
 ANTIFILTER_RU_BLOCKED_URL = "https://community.antifilter.download/list/domains.txt"
 HAGEZI_LIGHT_URLS = [
-    "https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@main/domains/light.txt",
-    "https://hagezi.github.io/dns-blocklists/domains/light.txt",
-    "https://raw.githubusercontent.com/hagezi/dns-blocklists/main/domains/light.txt",
+    "https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@main/wildcards/light-onlydomains.txt",
+    "https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcards/light-onlydomains.txt",
+    "https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@main/adblock/light.txt",
+    "https://hagezi.github.io/dns-blocklists/adblock/light.txt",
 ]
 PETER_LOWE_URL = "https://pgl.yoyo.org/adservers/serverlist.php?hostformat=plain&showintro=0&mimetype=plaintext"
 MANUAL_RU_BLOCKED_FILE = SOURCES_DIR / "manual_ru_blocked.txt"
