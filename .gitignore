@@ -7,6 +7,7 @@ __pycache__/
 .eggs/
 dist/
 build/
+*.egg
 
 # Virtual environment
 .venv/
@@ -23,3 +24,8 @@ venv/
 
 # Atomic write temp files
 *.tmp
+
+# Build artifacts
+*.dat
+*.dat.sha256
+sing-box/

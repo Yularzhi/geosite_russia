@@ -16,9 +16,9 @@ hagezi_light_urls:
 peter_lowe_url: "https://pgl.yoyo.org/adservers/serverlist.php?hostformat=plain&showintro=0&mimetype=plaintext"
 
 # Manual / direct domains
-manual_ru_blocked_file: "sources/manual_ru_blocked.txt"
-apple_direct_file: "sources/apple.txt"
-category_ru_direct_file: "sources/category-ru-direct.txt"
+manual_ru_blocked_file: "manual_ru_blocked.txt"
+apple_direct_file: "apple.txt"
+category_ru_direct_file: "category-ru-direct.txt"
 
 # Tag → source mapping (only tags fetched from DLC)
 root_tag_source:
