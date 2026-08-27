@@ -1,5 +1,8 @@
+"""Shared utilities for source loading, domain normalization, and rule parsing."""
+
 from __future__ import annotations
 
+import re
 from collections.abc import Callable
 from pathlib import Path
 
@@ -18,6 +21,8 @@ ROOT_TAGS = [
     "private",
 ]
 
+DOMAIN_RE = re.compile(r"^(?:[a-z0-9-]+\.)+[a-z]{2,63}$")
+
 
 def strip_inline_comment(line: str) -> str:
     """Remove inline comments starting with '#' and return stripped line."""
@@ -26,9 +31,7 @@ def strip_inline_comment(line: str) -> str:
     return line.strip()
 
 
-def load_domain_file(
-    file_path: Path, normalizer: Callable[[str], str | None] | None = None
-) -> list[str]:
+def load_domain_file(file_path: Path, normalizer: Callable[[str], str | None] | None = None) -> list[str]:
     """Load lines from a file, stripping comments and optionally normalizing domains."""
     if not file_path.exists():
         return []

@@ -1,0 +1,79 @@
+# ── Source configuration for geosite_russia builder ──────────────────────────
+# All external URLs and static sources live here — no code changes needed
+# when upstream lists move or new ones are added.
+
+# DLC base (v2fly domain-list-community)
+dlc_base: "https://raw.githubusercontent.com/v2fly/domain-list-community/master/data/"
+
+# ru-blocked sources
+proxy_url: "https://raw.githubusercontent.com/Loyalsoldier/surge-rules/release/proxy.txt"
+antifilter_ru_blocked_url: "https://community.antifilter.download/list/domains.txt"
+
+# category-ads-all sources
+hagezi_light_urls:
+  - "https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/wildcard/light-onlydomains.txt"
+  - "https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/light-onlydomains.txt"
+peter_lowe_url: "https://pgl.yoyo.org/adservers/serverlist.php?hostformat=plain&showintro=0&mimetype=plaintext"
+
+# Manual / direct domains
+manual_ru_blocked_file: "sources/manual_ru_blocked.txt"
+apple_direct_file: "sources/apple.txt"
+category_ru_direct_file: "sources/category-ru-direct.txt"
+
+# Tag → source mapping (only tags fetched from DLC)
+root_tag_source:
+  category-ru: dlc
+  telegram: dlc
+  viber: dlc
+  whatsapp: dlc
+  meta: dlc
+  facebook: dlc
+  google: dlc
+  supercell: dlc
+  roblox: dlc
+  private: dlc
+
+# ── Russian domains excluded from ru-blocked ────────────────────────────────
+# These must NOT be routed through proxy even if they appear in blocked lists.
+ru_excluded_suffixes:
+  - vk.ru
+  - vk.com
+  - vkvideo.ru
+  - vkuser.net
+  - vkuservideo.net
+  - mycdn.me
+  - mail.ru
+  - inbox.ru
+  - list.ru
+  - bk.ru
+  - ok.ru
+  - odnoklassniki.ru
+  - yandex.ru
+  - yandex.net
+  - ya.ru
+  - dzen.ru
+  - rutube.ru
+  - rambler.ru
+  - kinoafisha.info
+  - cdn-vk.ru
+
+# Russian TLDs that automatically exclude a domain from ru-blocked
+ru_tlds:
+  - ".ru"
+  - ".su"
+  - ".xn--p1ai"
+
+# ── Domain-level exclusions per tag ─────────────────────────────────────────
+excluded_domains:
+  category-ads-all:
+    - yabs.yandex.ru
+
+# ── HTTP client ─────────────────────────────────────────────────────────────
+http:
+  user_agent: "custom-geosite-builder/1.0"
+  timeout: 90
+  retries:
+    total: 3
+    backoff_factor: 1
+    status_forcelist: [429, 500, 502, 503, 504]
+    allowed_methods: [GET]

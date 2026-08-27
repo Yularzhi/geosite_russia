@@ -22,6 +22,9 @@ jobs:
     steps:
       - name: Checkout main
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GH_PAT }}
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -34,13 +37,16 @@ jobs:
           go-version: "1.23.1"
 
       - name: Install Python dependencies
-        run: pip install -r requirements.txt
+        run: pip install ".[dev]"
 
       - name: Build source lists
-        run: python scripts/build_lists.py
+        run: python -m geosite_russia.build_lists
+
+      - name: Validate generated data
+        run: python -c "import geosite_russia; from geosite_russia import build_lists; errs = build_lists.validate_output(); [print(e) for e in errs]; exit(1) if errs else print('All tags validated OK')"
 
       - name: Build sing-box rule-set sources
-        run: python scripts/build_singbox_rulesets.py --output-dir "$RUNNER_TEMP/singbox-source"
+        run: python -m geosite_russia.build_singbox_rulesets --output-dir "$RUNNER_TEMP/singbox-source"
 
       - name: Prepare release worktree
         run: |

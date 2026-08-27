@@ -1,19 +1,19 @@
+"""Build sing-box rule-set source JSON files from data/ tags."""
+
 from __future__ import annotations
 
 import argparse
 import json
 import shutil
-import sys
 from pathlib import Path
+
+# Normal package import — no sys.path hacks needed.
+from geosite_russia.shared import ROOT_TAGS, strip_inline_comment
 
 ROOT = Path(__file__).resolve().parent.parent
 DATA_DIR = ROOT / "data"
 
-sys.path.insert(0, str(ROOT))
-
-from scripts.build_shared import ROOT_TAGS, strip_inline_comment
-
-RULE_PREFIXES = {
+RULE_PREFIXES: dict[str, str] = {
     "full:": "domain",
     "keyword:": "domain_keyword",
     "regexp:": "domain_regex",
@@ -94,6 +94,14 @@ def build_rule_set(tag: str) -> dict[str, object]:
     }
 
 
+def atomic_write(path: Path, content: str) -> None:
+    """Write file atomically via tmp + move."""
+    tmp_path = str(path) + ".tmp"
+    with open(tmp_path, "w", encoding="utf-8") as f:
+        f.write(content)
+    shutil.move(tmp_path, str(path))
+
+
 def cleanup_output_dir(output_dir: Path) -> None:
     if output_dir.exists():
         shutil.rmtree(output_dir)
@@ -106,11 +114,10 @@ def build(output_dir: Path) -> None:
     for tag in ROOT_TAGS:
         source = build_rule_set(tag)
         out_path = output_dir / f"{tag}.json"
-        out_path.write_text(
+        atomic_write(
+            out_path,
             json.dumps(source, ensure_ascii=False, indent=2) + "\n",
-            encoding="utf-8",
         )
-        print(f"Wrote {out_path}")
 
 
 def main() -> None:

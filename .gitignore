@@ -20,3 +20,6 @@ venv/
 
 # macOS
 .DS_Store
+
+# Atomic write temp files
+*.tmp
