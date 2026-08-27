@@ -29,3 +29,6 @@ venv/
 *.dat
 *.dat.sha256
 sing-box/
+# Dev-only (not needed for end users)
+tests/
+.pre-commit-config.yaml
