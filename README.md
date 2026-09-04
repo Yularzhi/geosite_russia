@@ -26,19 +26,17 @@
 
 🚀 Основной список
 ru-blocked — объединённый список:
-- runetfreedom/russia-blocked-geosite (ru-blocked.txt)
+- community.antifilter.download (заблокированные в РФ домены)
+- Loyalsoldier surge-rules proxy.txt (международные сервисы, требующие проксирования)
+- sources/manual_ru_blocked.txt (ручные дополнения: speedtest, игры, CDN)
 
-Покрывает:
-- заблокированные сайты
-- международные сервисы
-- ресурсы, требующие проксирования
-- без российских доменов
+Очищен от российских доменов (category-ru + суффиксы + `.ru/.su/.рф`).
 
 🇷🇺 Российские ресурсы
 category-ru — официальный список российских доменов из v2fly
 
 🚫 Реклама
-category-ads-all — список рекламы из v2fly/domain-list-community + Peter Lowe
+category-ads-all — список рекламы из v2fly/domain-list-community + HaGeZi + Peter Lowe
 
 📱 Сервисы
 telegram
@@ -103,6 +101,7 @@ Sing-box rule-sets:
 
 | Tag | Raw URL |
 | --- | --- |
+| `ru-blocked` | [srs](https://raw.githubusercontent.com/yularzhi/geosite_russia/release/sing-box/ru-blocked.srs) |
 | `category-ads-all` | [srs](https://raw.githubusercontent.com/yularzhi/geosite_russia/release/sing-box/category-ads-all.srs) |
 | `category-ru` | [srs](https://raw.githubusercontent.com/yularzhi/geosite_russia/release/sing-box/category-ru.srs) |
 | `telegram` | [srs](https://raw.githubusercontent.com/yularzhi/geosite_russia/release/sing-box/telegram.srs) |
@@ -138,8 +137,8 @@ geosite:category-ads-all
 
 Сборка выполняется автоматически через GitHub Actions:
 
-- скачиваются исходные списки из runetfreedom/russia-blocked-geosite
-- нормализуются домены
+- скачиваются исходные списки (antifilter, Loyalsoldier proxy, HaGeZi, Peter Lowe)
+- нормализуются домены (lowercase, punycode/IDN, обрезка портов)
 - разворачиваются include зависимости из v2fly DLC
 - генерируется geosite.dat и набор sing-box rule-set файлов
 - публикуется в ветку release
@@ -149,16 +148,19 @@ geosite:category-ads-all
 ## 📊 Особенности
 
 - оптимизировано под низкое потребление памяти (~20–30 MB)
-- ru-blocked берётся из готового списка runetfreedom (уже очищен от RU доменов)
-- category-ads-all берётся из v2fly/domain-list-community + Peter Lowe
+- ru-blocked объединяется из antifilter + Loyalsoldier proxy + ручных доменов и очищается от RU
+- category-ads-all берётся из v2fly/domain-list-community + HaGeZi + Peter Lowe
 - отсутствуют лишние и дублирующие списки
 - все зависимости разворачиваются в плоский вид
 - полный контроль над составом списков
 
 ## 📚 Источники
 
-Основные:
-https://github.com/runetfreedom/russia-blocked-geosite
+Основные (см. `sources/config.yaml`):
+https://community.antifilter.download/list/domains.txt
+https://github.com/Loyalsoldier/surge-rules (proxy.txt)
+https://github.com/hagezi/dns-blocklists (wildcard light)
+https://pgl.yoyo.org/adservers/
 
 Upstream:
 https://github.com/v2fly/domain-list-community
@@ -171,7 +173,7 @@ https://github.com/v2fly/domain-list-community
 
 RunetFreedom  
 https://github.com/runetfreedom/russia-blocked-geosite  
-Списки заблокированных доменов и рекламы для России
+Ранее использовавшийся источник списков заблокированных доменов
 
 Loyalsoldier  
 https://github.com/Loyalsoldier/v2ray-rules-dat  
@@ -183,8 +185,8 @@ https://community.antifilter.download
 
 ## ⚠️ Примечания
 
-- ru-blocked — готовый список из runetfreedom (уже очищен от российских доменов)
-- category-ads-all — готовый список рекламы из v2fly/domain-list-community + Peter Lowe
+- ru-blocked — объединённый список (antifilter + Loyalsoldier proxy + ручной), очищен от российских доменов
+- category-ads-all — готовый список рекламы из v2fly/domain-list-community + HaGeZi + Peter Lowe
 - viber расширен доменами Rakuten
 - category-ads-all используется в полном развёрнутом виде
 - итоговый файл не содержит промежуточных тегов

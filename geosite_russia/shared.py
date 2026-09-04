@@ -7,6 +7,7 @@ from collections.abc import Callable
 from pathlib import Path
 
 ROOT_TAGS = [
+    "ru-blocked",
     "category-ads-all",
     "category-ru",
     "telegram",
@@ -21,7 +22,7 @@ ROOT_TAGS = [
     "private",
 ]
 
-DOMAIN_RE = re.compile(r"^(?:[a-z0-9-]+\.)+[a-z]{2,63}$")
+DOMAIN_RE = re.compile(r"^(?:[a-z0-9-]+\.)+(?:[a-z]{2,63}|xn--[a-z0-9-]+)$")
 
 
 def strip_inline_comment(line: str) -> str:

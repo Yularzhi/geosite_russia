@@ -39,11 +39,14 @@ jobs:
       - name: Install Python dependencies
         run: pip install ".[dev]"
 
+      - name: Run unit tests
+        run: python -m pytest tests/ -q
+
       - name: Build source lists
         run: python -m geosite_russia.build_lists
 
       - name: Validate generated data
-        run: python -c "import geosite_russia; from geosite_russia import build_lists; errs = build_lists.validate_output(); [print(e) for e in errs]; exit(1) if errs else print('All tags validated OK')"
+        run: python -c "from geosite_russia import build_lists; errs = build_lists.validate_output(); [print(e) for e in errs]; exit(1) if errs else print('All tags validated OK')"
 
       - name: Build sing-box rule-set sources
         run: python -m geosite_russia.build_singbox_rulesets --output-dir "$RUNNER_TEMP/singbox-source"

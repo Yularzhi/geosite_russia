@@ -8,6 +8,9 @@ __pycache__/
 dist/
 build/
 *.egg
+.pytest_cache/
+.coverage
+htmlcov/
 
 # Virtual environment
 .venv/
@@ -30,5 +33,4 @@ venv/
 *.dat.sha256
 sing-box/
 # Dev-only (not needed for end users)
-tests/
 .pre-commit-config.yaml

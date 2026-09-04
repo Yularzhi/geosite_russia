@@ -38,35 +38,73 @@ def load_config() -> dict:
         return yaml.safe_load(f)
 
 
-SRC = load_config()
+_SRC_CACHE: dict | None = None
 
-ROOT_TAG_SOURCE = SRC["root_tag_source"]
 
-RU_EXCLUDED_SUFFIXES = set(SRC["ru_excluded_suffixes"])
-RU_TLDS = tuple(SRC["ru_tlds"])
+def _populate_globals(cfg: dict) -> None:
+    """Copy config values into module globals so internal lookups work."""
+    g = globals()
+    g["SRC"] = cfg
+    g["ROOT_TAG_SOURCE"] = cfg["root_tag_source"]
+    g["RU_EXCLUDED_SUFFIXES"] = set(cfg["ru_excluded_suffixes"])
+    g["RU_TLDS"] = tuple(cfg["ru_tlds"])
+    g["ADS_EXCLUDED_DOMAINS"] = set(cfg.get("excluded_domains", {}).get("category-ads-all", []))
+    g["MANUAL_RU_BLOCKED_FILE"] = SOURCES_DIR / cfg["manual_ru_blocked_file"]
+    g["APPLE_DIRECT_FILE"] = SOURCES_DIR / cfg["apple_direct_file"]
+    g["CATEGORY_RU_DIRECT_FILE"] = SOURCES_DIR / cfg["category_ru_direct_file"]
+    g["DLC_BASE"] = cfg["dlc_base"]
+    g["PROXY_URL"] = cfg["proxy_url"]
+    g["ANTIFILTER_RU_BLOCKED_URL"] = cfg["antifilter_ru_blocked_url"]
+    g["HAGEZI_LIGHT_URLS"] = cfg["hagezi_light_urls"]
+    g["PETER_LOWE_URL"] = cfg["peter_lowe_url"]
+    g["HTTP_TIMEOUT"] = cfg["http"]["timeout"]
+    g["RETRY_TOTAL"] = cfg["http"]["retries"]["total"]
+    g["RETRY_BACKOFF"] = cfg["http"]["retries"]["backoff_factor"]
+    g["RETRY_STATUSES"] = tuple(cfg["http"]["retries"]["status_forcelist"])
 
-ADS_EXCLUDED_DOMAINS = set(SRC.get("excluded_domains", {}).get("category-ads-all", []))
 
-MANUAL_RU_BLOCKED_FILE = SOURCES_DIR / SRC["manual_ru_blocked_file"]
-APPLE_DIRECT_FILE = SOURCES_DIR / SRC["apple_direct_file"]
-CATEGORY_RU_DIRECT_FILE = SOURCES_DIR / SRC["category_ru_direct_file"]
+def get_config() -> dict:
+    """Lazily load config (cached). Use reset_config() in tests."""
+    global _SRC_CACHE
+    if _SRC_CACHE is None:
+        _SRC_CACHE = load_config()
+        _populate_globals(_SRC_CACHE)
+    return _SRC_CACHE
 
-DLC_BASE = SRC["dlc_base"]
-PROXY_URL = SRC["proxy_url"]
-ANTIFILTER_RU_BLOCKED_URL = SRC["antifilter_ru_blocked_url"]
-HAGEZI_LIGHT_URLS = SRC["hagezi_light_urls"]
-PETER_LOWE_URL = SRC["peter_lowe_url"]
 
-HTTP_TIMEOUT = SRC["http"]["timeout"]
-RETRY_TOTAL = SRC["http"]["retries"]["total"]
-RETRY_BACKOFF = SRC["http"]["retries"]["backoff_factor"]
-RETRY_STATUSES = tuple(SRC["http"]["retries"]["status_forcelist"])
+def reset_config() -> None:
+    """Drop cached config and HTTP session (mainly for tests)."""
+    global _SRC_CACHE, SESSION
+    _SRC_CACHE = None
+    SESSION = None
+    for key in (
+        "SRC", "ROOT_TAG_SOURCE", "RU_EXCLUDED_SUFFIXES", "RU_TLDS",
+        "ADS_EXCLUDED_DOMAINS", "MANUAL_RU_BLOCKED_FILE", "APPLE_DIRECT_FILE",
+        "CATEGORY_RU_DIRECT_FILE", "DLC_BASE", "PROXY_URL",
+        "ANTIFILTER_RU_BLOCKED_URL", "HAGEZI_LIGHT_URLS", "PETER_LOWE_URL",
+        "HTTP_TIMEOUT", "RETRY_TOTAL", "RETRY_BACKOFF", "RETRY_STATUSES",
+    ):
+        globals().pop(key, None)
+
+
+def __getattr__(name: str) -> object:
+    """Lazy module attributes backed by sources/config.yaml.
+
+    Keeps ``from geosite_russia.build_lists import PROXY_URL`` working
+    without parsing YAML at import time.
+    """
+    get_config()
+    g = globals()
+    if name in g:
+        return g[name]
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
 
 SESSION = None  # created lazily
 
 
 def _make_session() -> object:
     """Create a requests Session with retry logic."""
+    get_config()  # ensure config globals populated
     import requests
 
     session = requests.Session()
@@ -85,10 +123,11 @@ def _make_session() -> object:
     return session
 
 
-DOMAIN_RE = re.compile(r"^(?:[a-z0-9-]+\.)+[a-z]{2,63}$")
+DOMAIN_RE = re.compile(r"^(?:[a-z0-9-]+\.)+(?:[a-z]{2,63}|xn--[a-z0-9-]+)$")
 
 
 def get_session() -> object:
+    get_config()  # ensure SRC/HTTP_* globals are populated
     global SESSION
     if SESSION is None:
         SESSION = _make_session()
@@ -122,12 +161,23 @@ def normalize_text_domain(line: str) -> str | None:
 
     line = line.split("/", 1)[0]
 
-    if ":" in line and line.count(":") == 1:
-        host, port = line.split(":", 1)
-        if port.isdigit():
-            line = host
+    if ":" in line:
+        if line.count(":") == 1:
+            host, port = line.split(":", 1)
+            if port.isdigit() or not port:
+                line = host
+            else:
+                return None  # invalid host:port
+        else:
+            return None  # IPv6 or malformed
 
     if not line or "_" in line or line.endswith(".local"):
+        return None
+
+    # Unicode → punycode (IDN), ignore if already ASCII
+    try:
+        line = line.encode("idna").decode("ascii")
+    except (UnicodeError, ValueError):
         return None
 
     return line if DOMAIN_RE.match(line) else None
@@ -163,6 +213,7 @@ def cleanup_data_dir() -> None:
 
 def fetch_text(url: str, *, timeout: int | None = None) -> str:
     """Fetch text content from URL with automatic retry on transient errors."""
+    get_config()  # ensure config globals populated
     if timeout is None:
         timeout = HTTP_TIMEOUT
     sess = get_session()
@@ -233,6 +284,7 @@ def merge_required_attrs(
 
 
 def get_tag_url(tag: str) -> str:
+    get_config()  # ensure config globals populated
     source = ROOT_TAG_SOURCE.get(tag, "dlc")
 
     if source == "dlc":
@@ -241,11 +293,28 @@ def get_tag_url(tag: str) -> str:
     raise ValueError(f"Unknown source for tag: {tag}")
 
 
+# Cache of fully flattened top-level DLC tags (no attrs filter).
+# Avoids refetching the same tag twice per run
+# (e.g. category-ru in build_ru_blocked + build_flat_root_tags).
+_FLATTEN_CACHE: dict[str, list[str]] = {}
+
+
+def clear_flatten_cache() -> None:
+    """Drop cached DLC results (mainly for tests)."""
+    _FLATTEN_CACHE.clear()
+
+
 def flatten_rules(
     tag: str,
     required_attrs: set[str] | None = None,
     seen: set[tuple[str, tuple[str, ...]]] | None = None,
 ) -> list[str]:
+    # Cache only top-level unfiltered results — recursive calls pass `seen`
+    # explicitly and bypass the cache.
+    top_level = seen is None and not required_attrs
+    if top_level and tag in _FLATTEN_CACHE:
+        return list(_FLATTEN_CACHE[tag])
+
     if seen is None:
         seen = set()
 
@@ -276,6 +345,9 @@ def flatten_rules(
         else:
             if rule_matches_attrs(attrs, required_attrs):
                 rules.append(value)
+
+    if top_level:
+        _FLATTEN_CACHE[tag] = list(rules)
 
     return rules
 
@@ -311,6 +383,7 @@ def extract_plain_domains_from_rules(rules: list[str]) -> set[str]:
 
 
 def is_ru_excluded_domain(domain: str) -> bool:
+    get_config()  # ensure config globals populated
     for suffix in RU_EXCLUDED_SUFFIXES:
         if domain == suffix or domain.endswith("." + suffix):
             return True
@@ -320,6 +393,7 @@ def is_ru_excluded_domain(domain: str) -> bool:
 
 def build_ru_blocked() -> list[str]:
     """Build ru-blocked from legacy upstream sources plus manual domains."""
+    get_config()  # ensure config globals populated
     domains: set[str] = set()
 
     try:
@@ -351,6 +425,7 @@ def build_ru_blocked() -> list[str]:
 
 
 def build_ads() -> list[str]:
+    get_config()  # ensure config globals populated
     domains: set[str] = set()
 
     # DLC category-ads-all
@@ -401,8 +476,8 @@ def build_flat_root_tags() -> dict[str, list[str]]:
     results: dict[str, list[str]] = {}
 
     for tag in ROOT_TAGS:
-        if tag == "category-ads-all":
-            continue
+        if tag in ("category-ads-all", "ru-blocked"):
+            continue  # built by dedicated builders
 
         log.info("Building tag: %s", tag)
 
@@ -430,11 +505,13 @@ def build_flat_root_tags() -> dict[str, list[str]]:
 
 def load_apple_direct_domains() -> list[str]:
     """Load apple direct domains from sources/apple.txt"""
+    get_config()  # ensure config globals populated
     return load_domain_file(APPLE_DIRECT_FILE, normalize_text_domain)
 
 
 def load_category_ru_direct_domains() -> list[str]:
     """Load category-ru direct domains from sources/category-ru-direct.txt"""
+    get_config()  # ensure config globals populated
     return load_domain_file(CATEGORY_RU_DIRECT_FILE, normalize_text_domain)
 
 
@@ -451,6 +528,9 @@ REQUIRED_MIN_DOMAINS: dict[str, int] = {
     "meta": 1,
     "facebook": 1,
     "google": 1,
+    "supercell": 1,
+    "roblox": 1,
+    "apple": 1,
     "private": 1,
 }
 
