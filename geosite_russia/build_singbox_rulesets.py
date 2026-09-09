@@ -8,9 +8,9 @@ import shutil
 from pathlib import Path
 
 # Normal package import — no sys.path hacks needed.
-from geosite_russia.shared import ROOT_TAGS, strip_inline_comment
+from geosite_russia.shared import ROOT_TAGS, find_root, strip_inline_comment
 
-ROOT = Path(__file__).resolve().parent.parent
+ROOT = find_root()
 DATA_DIR = ROOT / "data"
 
 RULE_PREFIXES: dict[str, str] = {
