@@ -7,7 +7,6 @@ import pytest
 from geosite_russia import build_lists, shared
 from geosite_russia.build_singbox_rulesets import build_rule_set, parse_rule
 
-
 # ── shared ────────────────────────────────────────────────────────────────
 
 
@@ -87,9 +86,11 @@ def test_flatten_rules_cycle_safe(monkeypatch):
 def test_flatten_rules_cached(monkeypatch):
     calls = []
     monkeypatch.setattr(build_lists, "DLC_BASE", "https://dlc/")
+
     def fake_fetch(url, **kw):
         calls.append(url)
         return "x.com\n"
+
     monkeypatch.setattr(build_lists, "fetch_text", fake_fetch)
     build_lists.clear_flatten_cache()
     try:
@@ -138,3 +139,32 @@ def test_validate_output_missing_and_min(tmp_path):
     assert any("[a] Only 1" in e for e in errs)
     assert any("[b] File missing" in e for e in errs)
     assert build_lists.validate_output({"a": 1}, data_dir=tmp_path) == []
+
+
+# ── required-source failure handling ──────────────────────────────────────
+
+
+def test_build_ru_blocked_fails_without_antifilter(monkeypatch, tmp_path):
+    build_lists.get_config()
+    monkeypatch.setattr(build_lists, "DATA_DIR", tmp_path)
+    monkeypatch.setattr(build_lists, "flatten_rules", lambda tag, required_attrs=None, seen=None: [])
+
+    def boom(url, **kw):
+        raise OSError("down")
+
+    monkeypatch.setattr(build_lists, "fetch_lines", boom)
+    with pytest.raises(RuntimeError):
+        build_lists.build_ru_blocked()
+
+
+def test_build_ads_fails_when_all_hagezi_mirrors_down(monkeypatch, tmp_path):
+    build_lists.get_config()
+    monkeypatch.setattr(build_lists, "DATA_DIR", tmp_path)
+    monkeypatch.setattr(build_lists, "flatten_rules", lambda tag, required_attrs=None, seen=None: ["x.com"])
+
+    def boom(url, **kw):
+        raise OSError("down")
+
+    monkeypatch.setattr(build_lists, "fetch_text", boom)
+    with pytest.raises(RuntimeError):
+        build_lists.build_ads()

@@ -1,5 +1,7 @@
 name: Build geosite.dat
 
+permissions: {}
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -14,6 +16,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     permissions:
       contents: write
     env:
@@ -21,18 +24,18 @@ jobs:
 
     steps:
       - name: Checkout main
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.2.2
         with:
           fetch-depth: 0
-          token: ${{ secrets.GITHUB_TOKEN }}
+          persist-credentials: false
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
         with:
           python-version: "3.12"
 
       - name: Set up Go
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@40f1582b2485089dde7abd97c1529aa768e1baff # v5.5.0
         with:
           go-version: "1.23.1"
 
@@ -53,12 +56,16 @@ jobs:
 
       - name: Prepare release worktree
         run: |
+          git config --global url."https://x-access-token:${GITHUB_TOKEN}@github.com/".insteadOf "https://github.com/"
           git fetch origin release
           git worktree add -B release "$RUNNER_TEMP/release-branch" origin/release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      # Data source: intentionally fresh master (daily domain updates), shallow for speed.
       - name: Build geosite.dat
         run: |
-          git clone https://github.com/v2fly/domain-list-community.git dlc
+          git clone --depth 1 https://github.com/v2fly/domain-list-community.git dlc
           cd dlc
           go mod download
           go run ./ --datapath=../data
@@ -66,7 +73,7 @@ jobs:
 
       - name: Install sing-box
         run: |
-          go install github.com/sagernet/sing-box/cmd/sing-box@main
+          go install github.com/sagernet/sing-box/cmd/sing-box@v1.14.0
           echo "$(go env GOPATH)/bin" >> "$GITHUB_PATH"
 
       - name: Build sing-box rule-sets
@@ -111,7 +118,7 @@ jobs:
           git push --atomic origin main release "refs/tags/${RELEASE_TAG}"
 
       - name: Create or update GitHub Release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@3bb12739c298aeb8a4eeaf626c5b8d85266b0e65 # v2.3.4
         with:
           tag_name: ${{ env.RELEASE_TAG }}
           name: Latest geosite.dat and sing-box rule-sets
@@ -129,8 +136,18 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      # Keep only the 10 most recent automated tags/releases.
+      - name: Prune old release tags
+        run: |
+          tags="$(git ls-remote --tags origin 'refs/tags/latest-geosite-*' | sed 's|.*refs/tags/||' | sort -V | head -n -10)"
+          for tag in $tags; do
+            gh release delete "$tag" --yes --cleanup-tag || true
+          done
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: geosite-and-sing-box
           path: |

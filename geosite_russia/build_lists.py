@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import logging
-import re
 import shutil
 import sys
 from pathlib import Path
@@ -14,7 +13,7 @@ from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 
 # Normal package import — no sys.path hacks needed.
-from geosite_russia.shared import ROOT_TAGS, load_domain_file, strip_inline_comment
+from geosite_russia.shared import DOMAIN_RE, ROOT_TAGS, load_domain_file, strip_inline_comment
 
 logging.basicConfig(
     level=logging.INFO,
@@ -78,11 +77,23 @@ def reset_config() -> None:
     _SRC_CACHE = None
     SESSION = None
     for key in (
-        "SRC", "ROOT_TAG_SOURCE", "RU_EXCLUDED_SUFFIXES", "RU_TLDS",
-        "ADS_EXCLUDED_DOMAINS", "MANUAL_RU_BLOCKED_FILE", "APPLE_DIRECT_FILE",
-        "CATEGORY_RU_DIRECT_FILE", "DLC_BASE", "PROXY_URL",
-        "ANTIFILTER_RU_BLOCKED_URL", "HAGEZI_LIGHT_URLS", "PETER_LOWE_URL",
-        "HTTP_TIMEOUT", "RETRY_TOTAL", "RETRY_BACKOFF", "RETRY_STATUSES",
+        "SRC",
+        "ROOT_TAG_SOURCE",
+        "RU_EXCLUDED_SUFFIXES",
+        "RU_TLDS",
+        "ADS_EXCLUDED_DOMAINS",
+        "MANUAL_RU_BLOCKED_FILE",
+        "APPLE_DIRECT_FILE",
+        "CATEGORY_RU_DIRECT_FILE",
+        "DLC_BASE",
+        "PROXY_URL",
+        "ANTIFILTER_RU_BLOCKED_URL",
+        "HAGEZI_LIGHT_URLS",
+        "PETER_LOWE_URL",
+        "HTTP_TIMEOUT",
+        "RETRY_TOTAL",
+        "RETRY_BACKOFF",
+        "RETRY_STATUSES",
     ):
         globals().pop(key, None)
 
@@ -99,7 +110,28 @@ def __getattr__(name: str) -> object:
         return g[name]
     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
 
+
 SESSION = None  # created lazily
+
+# Placeholder values; populated lazily by _populate_globals() from sources/config.yaml.
+# Real (non-annotation) bindings so ruff F821 stays strict without eager config loading.
+SRC: dict = {}
+ROOT_TAG_SOURCE: dict[str, str] = {}
+RU_EXCLUDED_SUFFIXES: set[str] = set()
+RU_TLDS: tuple[str, ...] = ()
+ADS_EXCLUDED_DOMAINS: set[str] = set()
+MANUAL_RU_BLOCKED_FILE: Path = SOURCES_DIR / "manual_ru_blocked.txt"
+APPLE_DIRECT_FILE: Path = SOURCES_DIR / "apple.txt"
+CATEGORY_RU_DIRECT_FILE: Path = SOURCES_DIR / "category-ru-direct.txt"
+DLC_BASE = ""
+PROXY_URL = ""
+ANTIFILTER_RU_BLOCKED_URL = ""
+HAGEZI_LIGHT_URLS: list[str] = []
+PETER_LOWE_URL = ""
+HTTP_TIMEOUT = 90
+RETRY_TOTAL = 3
+RETRY_BACKOFF = 1
+RETRY_STATUSES: tuple[int, ...] = (429, 500, 502, 503, 504)
 
 
 def _make_session() -> object:
@@ -121,9 +153,6 @@ def _make_session() -> object:
     session.mount("https://", adapter)
     session.mount("http://", adapter)
     return session
-
-
-DOMAIN_RE = re.compile(r"^(?:[a-z0-9-]+\.)+(?:[a-z]{2,63}|xn--[a-z0-9-]+)$")
 
 
 def get_session() -> object:
@@ -403,6 +432,7 @@ def build_ru_blocked() -> list[str]:
                 domains.add(domain)
     except Exception as e:  # noqa: BLE001
         log.error("Failed to fetch antifilter list from %s: %s", ANTIFILTER_RU_BLOCKED_URL, e)
+        raise RuntimeError(f"Required source failed: antifilter ({ANTIFILTER_RU_BLOCKED_URL})") from e
 
     category_ru_domains = extract_plain_domains_from_rules(flatten_rules("category-ru"))
 
@@ -414,6 +444,7 @@ def build_ru_blocked() -> list[str]:
             domains.add(domain)
     except Exception as e:  # noqa: BLE001
         log.error("Failed to fetch proxy list from %s: %s", PROXY_URL, e)
+        raise RuntimeError(f"Required source failed: proxy list ({PROXY_URL})") from e
 
     for domain in load_domain_file(MANUAL_RU_BLOCKED_FILE, normalize_text_domain):
         domains.add(domain)
@@ -430,15 +461,19 @@ def build_ads() -> list[str]:
 
     # DLC category-ads-all
     try:
-        for rule in flatten_rules("category-ads-all"):
-            rule = rule.strip()
-            if not rule or rule.startswith(("full:", "keyword:", "regexp:", "domain:", "include:")):
-                continue
-            domain = normalize_text_domain(rule)
-            if domain and domain not in ADS_EXCLUDED_DOMAINS:
-                domains.add(domain)
+        dlc_rules = flatten_rules("category-ads-all")
     except Exception as e:  # noqa: BLE001
         log.error("Failed to build ads from DLC: %s", e)
+        raise RuntimeError("Required source failed: DLC category-ads-all") from e
+    if not dlc_rules:
+        raise RuntimeError("Required source failed: DLC category-ads-all returned no rules")
+    for rule in dlc_rules:
+        rule = rule.strip()
+        if not rule or rule.startswith(("full:", "keyword:", "regexp:", "domain:", "include:")):
+            continue
+        domain = normalize_text_domain(rule)
+        if domain and domain not in ADS_EXCLUDED_DOMAINS:
+            domains.add(domain)
 
     # HaGeZi Light
     hagezi_fetched = False
@@ -454,7 +489,7 @@ def build_ads() -> list[str]:
             log.warning("HaGeZi Light failed from %s: %s", url, e)
 
     if not hagezi_fetched:
-        log.error("All HaGeZi Light mirrors failed")
+        raise RuntimeError("Required source failed: all HaGeZi Light mirrors")
 
     # Peter Lowe
     try:
@@ -464,6 +499,7 @@ def build_ads() -> list[str]:
                 domains.add(domain)
     except Exception as e:  # noqa: BLE001
         log.error("Failed to fetch Peter Lowe list from %s: %s", PETER_LOWE_URL, e)
+        raise RuntimeError(f"Required source failed: Peter Lowe ({PETER_LOWE_URL})") from e
 
     sorted_domains = sorted(domains)
     write_tag("category-ads-all", sorted_domains)
@@ -574,9 +610,13 @@ def main() -> None:
     DATA_DIR.mkdir(parents=True, exist_ok=True)
     SOURCES_DIR.mkdir(parents=True, exist_ok=True)
 
-    build_ru_blocked()
-    build_ads()
-    build_flat_root_tags()
+    try:
+        build_ru_blocked()
+        build_ads()
+        build_flat_root_tags()
+    except RuntimeError as e:
+        log.error("Build failed: %s", e)
+        sys.exit(1)
 
     # Validate output before returning success
     errors = validate_output()
