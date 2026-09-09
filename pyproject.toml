@@ -23,11 +23,11 @@ dev = [
 ]
 
 [project.scripts]
-geosite-build = "geosite_russia.build_lists:main"
-geosite-singbox = "geosite_russia.build_singbox_rulesets:main"
+geosite-build = "ru_geosite.build_lists:main"
+geosite-singbox = "ru_geosite.build_singbox_rulesets:main"
 
 [tool.setuptools.packages.find]
-include = ["geosite_russia*"]
+include = ["ru_geosite*"]
 
 [tool.ruff]
 line-length = 120
@@ -44,7 +44,7 @@ select = [
 ]
 
 [tool.ruff.lint.isort]
-known-first-party = ["geosite_russia"]
+known-first-party = ["ru_geosite"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

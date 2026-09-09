@@ -14,7 +14,7 @@ from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 
 # Normal package import — no sys.path hacks needed.
-from geosite_russia.shared import ROOT_TAGS, find_root, load_domain_file, strip_inline_comment
+from ru_geosite.shared import ROOT_TAGS, find_root, load_domain_file, strip_inline_comment
 
 logging.basicConfig(
     level=logging.INFO,

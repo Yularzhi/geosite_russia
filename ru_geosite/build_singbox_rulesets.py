@@ -8,7 +8,7 @@ import shutil
 from pathlib import Path
 
 # Normal package import — no sys.path hacks needed.
-from geosite_russia.shared import ROOT_TAGS, find_root, strip_inline_comment
+from ru_geosite.shared import ROOT_TAGS, find_root, strip_inline_comment
 
 ROOT = find_root()
 DATA_DIR = ROOT / "data"

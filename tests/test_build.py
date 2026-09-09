@@ -1,11 +1,11 @@
-"""Tests for geosite_russia builder (offline, no network)."""
+"""Tests for ru_geosite builder (offline, no network)."""
 
 from __future__ import annotations
 
 import pytest
 
-from geosite_russia import build_lists, shared
-from geosite_russia.build_singbox_rulesets import build_rule_set, parse_rule
+from ru_geosite import build_lists, shared
+from ru_geosite.build_singbox_rulesets import build_rule_set, parse_rule
 
 # ── shared ────────────────────────────────────────────────────────────────
 
@@ -129,7 +129,7 @@ def test_parse_rule_variants():
 
 def test_build_rule_set(tmp_path, monkeypatch):
     (tmp_path / "t").write_text("full:a.com\nexample.com\nkeyword:ads\n", encoding="utf-8")
-    monkeypatch.setattr("geosite_russia.build_singbox_rulesets.DATA_DIR", tmp_path)
+    monkeypatch.setattr("ru_geosite.build_singbox_rulesets.DATA_DIR", tmp_path)
     rs = build_rule_set("t")
     assert rs["version"] == 4
     flat = {k: v for r in rs["rules"] for k, v in r.items()}
