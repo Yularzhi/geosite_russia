@@ -115,6 +115,73 @@ def test_is_ru_excluded_domain():
     assert not build_lists.is_ru_excluded_domain("example.com")
 
 
+# ── Direct/Proxy conflict ─────────────────────────────────────────────────
+
+
+def test_is_direct_domain_matches_parent_domain():
+    direct = {"bluestacks.com", "licard.com"}
+    assert build_lists.is_direct_domain("bluestacks.com", direct)
+    assert build_lists.is_direct_domain("api.bluestacks.com", direct)
+    assert not build_lists.is_direct_domain("notbluestacks.com", direct)
+    assert not build_lists.is_direct_domain("bluestacks.com.evil.net", direct)
+
+
+def _stub_ru_blocked(monkeypatch, tmp_path, *, antifilter, proxy, manual):
+    """Patch build_ru_blocked inputs: two remote lists, manual file, Direct set."""
+    build_lists.get_config()
+    monkeypatch.setattr(build_lists, "DATA_DIR", tmp_path)
+    monkeypatch.setattr(build_lists, "ANTIFILTER_RU_BLOCKED_URL", "antifilter")
+    monkeypatch.setattr(build_lists, "PROXY_URL", "proxy")
+    lists = {"antifilter": antifilter, "proxy": proxy}
+    monkeypatch.setattr(build_lists, "fetch_lines", lambda url: lists[url])
+    monkeypatch.setattr(build_lists, "load_domain_file", lambda *a, **kw: list(manual))
+    # Direct set = DLC half (bluestacks.com) + direct-file half (licard.com)
+    monkeypatch.setattr(build_lists, "flatten_rules", lambda tag, *a, **kw: ["bluestacks.com"])
+    monkeypatch.setattr(build_lists, "load_category_ru_direct_domains", lambda: ["licard.com"])
+
+
+def test_ru_blocked_drops_direct_conflicts_from_every_source(monkeypatch, tmp_path):
+    _stub_ru_blocked(
+        monkeypatch,
+        tmp_path,
+        antifilter=["bluestacks.com", "novayagazeta.ru"],
+        proxy=["api.bluestacks.com", "netflix.com", "licard.com"],
+        manual=["licard.com", "speedtest.net"],
+    )
+    assert build_lists.build_ru_blocked() == ["netflix.com", "novayagazeta.ru", "speedtest.net"]
+
+
+def test_ru_blocked_tld_exclusion_applies_only_to_proxy_list(monkeypatch, tmp_path):
+    _stub_ru_blocked(
+        monkeypatch,
+        tmp_path,
+        antifilter=["tvrain.ru"],
+        proxy=["rutracker.ru", "netflix.com"],
+        manual=["jut.su"],
+    )
+    result = build_lists.build_ru_blocked()
+    assert "tvrain.ru" in result  # antifilter kept as is
+    assert "jut.su" in result  # manual entries are explicit intent
+    assert "rutracker.ru" not in result  # proxy list cleaned by .ru/.su/.рф
+
+
+def test_flat_root_tags_lowercase_domain_rules_only(monkeypatch, tmp_path):
+    build_lists.get_config()
+    monkeypatch.setattr(build_lists, "DATA_DIR", tmp_path)
+    monkeypatch.setattr(build_lists, "ROOT_TAGS", ["category-ru"])
+    monkeypatch.setattr(
+        build_lists,
+        "flatten_rules",
+        lambda tag, *a, **kw: ["xn--80AGLFYFK.xn--p1ai", "regexp:(?i)Foo", "keyword:AdS"],
+    )
+    monkeypatch.setattr(build_lists, "load_category_ru_direct_domains", lambda: [])
+    build_lists.build_flat_root_tags()
+    lines = (tmp_path / "category-ru").read_text(encoding="utf-8").splitlines()
+    assert "xn--80aglfyfk.xn--p1ai" in lines
+    assert "regexp:(?i)Foo" in lines  # patterns stay case-sensitive
+    assert "keyword:AdS" in lines
+
+
 # ── sing-box ──────────────────────────────────────────────────────────────
 
 

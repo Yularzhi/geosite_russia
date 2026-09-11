@@ -405,6 +405,39 @@ def extract_plain_domains_from_rules(rules: list[str]) -> set[str]:
     return result
 
 
+def is_direct_domain(domain: str, direct_domains: set[str]) -> bool:
+    """True if ``domain`` is covered by a Direct rule (itself or a parent domain).
+
+    Mirrors the suffix semantics of ``is_ru_excluded_domain`` so a Direct rule
+    like ``bluestacks.com`` also shields ``api.bluestacks.com``.
+    """
+    labels = domain.split(".")
+    return any(".".join(labels[i:]) in direct_domains for i in range(len(labels) - 1))
+
+
+def full_category_ru_domains() -> set[str]:
+    """Complete Direct set: DLC ``category-ru`` plus ``sources/category-ru-direct.txt``.
+
+    Both halves are Direct, so both must be subtracted from every Proxy source —
+    checking only the DLC half is what let ``bluestacks.com`` land in both routes.
+    """
+    domains = extract_plain_domains_from_rules(flatten_rules("category-ru"))
+    domains.update(load_category_ru_direct_domains())
+    return domains
+
+
+_CASE_SENSITIVE_PREFIXES = ("keyword:", "regexp:")
+
+
+def lowercase_domain_rules(rules: list[str]) -> list[str]:
+    """Lowercase domain-like rules, leaving ``keyword:``/``regexp:`` untouched.
+
+    Domain matching is case-insensitive, but clients compare literally — an
+    upstream ``xn--80AGLFYFK.xn--p1ai`` never matched a lowercase rule.
+    """
+    return [rule if rule.startswith(_CASE_SENSITIVE_PREFIXES) else rule.lower() for rule in rules]
+
+
 def is_ru_excluded_domain(domain: str) -> bool:
     get_config()  # ensure config globals populated
     for suffix in RU_EXCLUDED_SUFFIXES:
@@ -415,25 +448,30 @@ def is_ru_excluded_domain(domain: str) -> bool:
 
 
 def build_ru_blocked() -> list[str]:
-    """Build ru-blocked from legacy upstream sources plus manual domains."""
+    """Build ru-blocked from legacy upstream sources plus manual domains.
+
+    Every source is filtered against the full Direct set (``category-ru`` +
+    ``category-ru-direct.txt``), so a domain can never be routed both Direct
+    and Proxy. The ``.ru/.su/.рф`` exclusion stays limited to the Loyalsoldier
+    proxy list: RU-blocked resources legitimately live on Russian TLDs.
+    """
     get_config()  # ensure config globals populated
     domains: set[str] = set()
+    direct_domains = full_category_ru_domains()
 
     try:
         for line in fetch_lines(ANTIFILTER_RU_BLOCKED_URL):
             domain = normalize_text_domain(line)
-            if domain:
+            if domain and not is_direct_domain(domain, direct_domains):
                 domains.add(domain)
     except Exception as e:  # noqa: BLE001
         log.error("Failed to fetch antifilter list from %s: %s", ANTIFILTER_RU_BLOCKED_URL, e)
         raise RuntimeError(f"Required source failed: antifilter ({ANTIFILTER_RU_BLOCKED_URL})") from e
 
-    category_ru_domains = extract_plain_domains_from_rules(flatten_rules("category-ru"))
-
     try:
         for line in fetch_lines(PROXY_URL):
             domain = normalize_text_domain(line)
-            if not domain or domain in category_ru_domains or is_ru_excluded_domain(domain):
+            if not domain or is_direct_domain(domain, direct_domains) or is_ru_excluded_domain(domain):
                 continue
             domains.add(domain)
     except Exception as e:  # noqa: BLE001
@@ -441,7 +479,8 @@ def build_ru_blocked() -> list[str]:
         raise RuntimeError(f"Required source failed: proxy list ({PROXY_URL})") from e
 
     for domain in load_domain_file(MANUAL_RU_BLOCKED_FILE, normalize_text_domain):
-        domains.add(domain)
+        if not is_direct_domain(domain, direct_domains):
+            domains.add(domain)
 
     sorted_domains = sorted(domains)
     write_tag("ru-blocked", sorted_domains)
@@ -522,7 +561,7 @@ def build_flat_root_tags() -> dict[str, list[str]]:
         else:
             rules = flatten_rules(tag)
 
-        rules = dedupe_keep_order(rules)
+        rules = dedupe_keep_order(lowercase_domain_rules(rules))
         write_tag(tag, rules)
         results[tag] = rules
         log.info("Tag %s: %d entries", tag, len(rules))
