@@ -85,14 +85,17 @@ fastlane.ci
 fastlane.tools
 crashlytics.com
 firebase.com
+firebase.dev
 firebase.io
 firebaseapp.com
 firebaseio.com
+firebase.google.com
 full:crashlyticsreports-pa.googleapis.com
 full:firebase-settings.crashlytics.com
-full:firebase.google.com
 full:firebase.googleapis.com
 full:firebaseappcheck.googleapis.com
+full:firebaseappdistribution.googleapis.com
+full:firebaseapptesters.googleapis.com
 full:firebasedynamiclinks-ipv4.googleapis.com
 full:firebasedynamiclinks-ipv6.googleapis.com
 full:firebasedynamiclinks.googleapis.com
@@ -137,6 +140,7 @@ full:cloudcode-pa.googleapis.com
 full:daily-cloudcode-pa.googleapis.com
 full:notebooklm-pa.googleapis.com
 full:notebooklm.googleapis.com
+notebook.google
 notebook.google.com
 notebooklm.google
 notebooklm.google.com
@@ -145,6 +149,7 @@ jules.google.com
 labs.google
 labs.google.com
 flow.google
+flow.google.com
 aisandbox-pa.googleapis.com
 aicode.googleapis.com
 aida.googleapis.com
