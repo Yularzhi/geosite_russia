@@ -7,6 +7,12 @@ licard.com
 lk-new.licard.com
 1cfresh.com
 
+# iBank
+bifit.com
+ibank.ru
+ibank2.ru
+absolutbank.ru
+
 # BlueStacks
 bluestacks.com
 bluestacks.biz
