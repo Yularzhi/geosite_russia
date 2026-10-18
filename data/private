@@ -120,6 +120,8 @@ router.ctc
 plex.direct
 localhost.sec.qq.com
 localhost.ptlogin2.qq.com
+full:localhost.weixin.qq.com
+full:localhost.work.weixin.qq.com
 tendawifi.com
 tplinkwifi.net
 full:tplogin.cn
