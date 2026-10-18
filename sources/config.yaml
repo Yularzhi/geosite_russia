@@ -67,6 +67,8 @@ ru_tlds:
 excluded_domains:
   category-ads-all:
     - yabs.yandex.ru
+    # Wildberries antibot — блокировка ломает доступ к самому сайту
+    - antibot.wildberries.ru
 
 # ── HTTP client ─────────────────────────────────────────────────────────────
 http:
