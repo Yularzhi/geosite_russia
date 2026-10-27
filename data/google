@@ -137,6 +137,9 @@ gemini.google.com
 gemini.gstatic.com
 full:geminiweb-pa.clients.google.com
 full:geminiweb-pa.clients6.google.com
+full:appsgenaiserver-pa.clients.google.com
+full:appsgenaiserver-pa.clients6.google.com
+full:appsgenaiserver-pa.googleapis.com
 full:cloudaicompanion.googleapis.com
 full:cloudcode-pa.googleapis.com
 full:daily-cloudcode-pa.googleapis.com
