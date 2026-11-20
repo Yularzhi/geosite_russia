@@ -238,3 +238,23 @@ def test_build_ads_fails_when_all_hagezi_mirrors_down(monkeypatch, tmp_path):
     monkeypatch.setattr(build_lists, "fetch_text", boom)
     with pytest.raises(RuntimeError):
         build_lists.build_ads()
+
+
+def test_is_direct_service_domain():
+    direct = {"aviasales.ru", "tinkoff.ru", "avito.ru", "gosuslugi.ru", "vk.com"}
+    # Service / telemetry / API subdomains of direct domains should be True (excluded from ads)
+    assert build_lists.is_direct_service_domain("sp.aviasales.ru", direct) is True
+    assert build_lists.is_direct_service_domain("api-statist.tinkoff.ru", direct) is True
+    assert build_lists.is_direct_service_domain("cs.avito.ru", direct) is True
+    assert build_lists.is_direct_service_domain("cs44.avito.ru", direct) is True
+    assert build_lists.is_direct_service_domain("api-metric.gosweb.gosuslugi.ru", direct) is True
+    assert build_lists.is_direct_service_domain("telemetry.tinkoff.ru", direct) is True
+
+    # Standalone ad subdomains of direct domains should be False (kept in ads)
+    assert build_lists.is_direct_service_domain("ads.vk.com", direct) is False
+    assert build_lists.is_direct_service_domain("ad.avito.ru", direct) is False
+
+    # Domains not in direct should be False
+    assert build_lists.is_direct_service_domain("api.google.com", direct) is False
+    assert build_lists.is_direct_service_domain("sp.unknown.com", direct) is False
+
