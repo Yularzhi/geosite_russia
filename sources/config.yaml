@@ -75,6 +75,10 @@ excluded_domains:
     - stats.avito.ru
     - mon.avito.ru
     - pixel-frontend.avito.ru
+    # Aviasales — блокировка этих трекеров ломает инициализацию и поиск билетов
+    - sp.aviasales.ru
+    - sp.aviasales.com
+    - metrics.aviasales.ru
 
 # ── HTTP client ─────────────────────────────────────────────────────────────
 http:
