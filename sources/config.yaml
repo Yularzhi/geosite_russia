@@ -69,6 +69,12 @@ excluded_domains:
     - yabs.yandex.ru
     # Wildberries antibot — блокировка ломает доступ к самому сайту
     - antibot.wildberries.ru
+    # Avito — блокировка этих хостов ломает контент страницы объявлений
+    # (cs.avito.ru используется фронтом через fetch/CORS, stats входит в Direct)
+    - cs.avito.ru
+    - stats.avito.ru
+    - mon.avito.ru
+    - pixel-frontend.avito.ru
 
 # ── HTTP client ─────────────────────────────────────────────────────────────
 http:
