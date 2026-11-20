@@ -4,8 +4,15 @@
 [![Last Commit](https://img.shields.io/github/last-commit/yularzhi/geosite_russia)](https://github.com/yularzhi/geosite_russia/commits/main)
 [![Release Branch](https://img.shields.io/badge/release-branch-blue)](https://github.com/yularzhi/geosite_russia/tree/release)
 [![Raw geosite.dat](https://img.shields.io/badge/raw-geosite.dat-brightgreen)](https://raw.githubusercontent.com/yularzhi/geosite_russia/release/geosite.dat)
+[![Related GeoIP](https://img.shields.io/badge/related-geoip__russia-orange)](https://github.com/yularzhi/geoip_russia)
 
 Кастомный geosite.dat для Xray и набор `.srs` rule-set файлов для Sing-box / Happ и других клиентов.
+
+> 💡 **Экосистема маршрутизации:**
+> - 🌐 **[geosite_russia](https://github.com/yularzhi/geosite_russia)** (этот репозиторий) — фильтрация по доменам (сервисы, антиблокировки, реклама).
+> - 📍 **[geoip_russia](https://github.com/yularzhi/geoip_russia)** — фильтрация по IP-адресам и подсетям (CIDR заблокированных ресурсов, whitelist мобильных операторов РФ, Telegram, Cloudflare и др.).
+> 
+> Рекомендуется использовать оба проекта вместе для построения полноценного сплит-туннеля.
 
 Основная цель проекта — создать лёгкий и эффективный набор доменных правил для работы в России:
 - обход блокировок
@@ -115,23 +122,71 @@ Sing-box rule-sets:
 | `apple` | [srs](https://raw.githubusercontent.com/yularzhi/geosite_russia/release/sing-box/apple.srs) |
 | `private` | [srs](https://raw.githubusercontent.com/yularzhi/geosite_russia/release/sing-box/private.srs) |
 
-## ⚙️ Использование
+## ⚙️ Использование в связке с [geoip_russia](https://github.com/yularzhi/geoip_russia)
 
-Proxy:
-geosite:ru-blocked
-geosite:telegram
-geosite:viber
-geosite:whatsapp
-geosite:meta
-geosite:facebook
-geosite:google
+Для максимальной надежности обхода блокировок и работы российских сайтов рекомендуется комбинировать правила `geosite` и `geoip`:
 
-Direct:
-geosite:category-ru
-geosite:private
+### Xray Routing Rules
 
-Block:
-geosite:category-ads-all
+```json
+{
+  "routing": {
+    "rules": [
+      {
+        "type": "field",
+        "domain": ["geosite:category-ads-all"],
+        "outboundTag": "block"
+      },
+      {
+        "type": "field",
+        "domain": [
+          "geosite:category-ru",
+          "geosite:apple",
+          "geosite:private"
+        ],
+        "ip": [
+          "geoip:ru",
+          "geoip:ru-whitelist",
+          "geoip:private"
+        ],
+        "outboundTag": "direct"
+      },
+      {
+        "type": "field",
+        "domain": [
+          "geosite:ru-blocked",
+          "geosite:telegram",
+          "geosite:viber",
+          "geosite:whatsapp",
+          "geosite:meta",
+          "geosite:facebook",
+          "geosite:google"
+        ],
+        "ip": [
+          "geoip:ru-blocked",
+          "geoip:telegram"
+        ],
+        "outboundTag": "proxy"
+      }
+    ]
+  }
+}
+```
+
+### Разделение тегов по назначениям
+
+**Proxy:**
+- `geosite:ru-blocked`
+- `geosite:telegram`, `geosite:viber`, `geosite:whatsapp`
+- `geosite:meta`, `geosite:facebook`, `geosite:google`
+
+**Direct:**
+- `geosite:category-ru`
+- `geosite:apple`
+- `geosite:private`
+
+**Block:**
+- `geosite:category-ads-all`
 
 ## 🔄 Автоматизация
 
