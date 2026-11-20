@@ -257,4 +257,3 @@ def test_is_direct_service_domain():
     # Domains not in direct should be False
     assert build_lists.is_direct_service_domain("api.google.com", direct) is False
     assert build_lists.is_direct_service_domain("sp.unknown.com", direct) is False
-

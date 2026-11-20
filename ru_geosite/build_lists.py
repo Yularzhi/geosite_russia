@@ -405,47 +405,49 @@ def extract_plain_domains_from_rules(rules: list[str]) -> set[str]:
     return result
 
 
-DIRECT_SERVICE_SUBDOMAIN_TOKENS = frozenset({
-    "analytic",
-    "analytics",
-    "antibot",
-    "api",
-    "appmetrica",
-    "auth",
-    "cdn",
-    "collector",
-    "cs",
-    "csp",
-    "event",
-    "events",
-    "fmon",
-    "gateway",
-    "log",
-    "logger",
-    "login",
-    "metric",
-    "metrics",
-    "mon",
-    "mstat",
-    "pixel",
-    "push",
-    "rum",
-    "rumstat",
-    "sp",
-    "sso",
-    "stat",
-    "statchecker",
-    "stats",
-    "static",
-    "storyly",
-    "svi",
-    "sync",
-    "telemetry",
-    "track",
-    "tracker",
-    "visor",
-    "ws",
-})
+DIRECT_SERVICE_SUBDOMAIN_TOKENS = frozenset(
+    {
+        "analytic",
+        "analytics",
+        "antibot",
+        "api",
+        "appmetrica",
+        "auth",
+        "cdn",
+        "collector",
+        "cs",
+        "csp",
+        "event",
+        "events",
+        "fmon",
+        "gateway",
+        "log",
+        "logger",
+        "login",
+        "metric",
+        "metrics",
+        "mon",
+        "mstat",
+        "pixel",
+        "push",
+        "rum",
+        "rumstat",
+        "sp",
+        "sso",
+        "stat",
+        "statchecker",
+        "stats",
+        "static",
+        "storyly",
+        "svi",
+        "sync",
+        "telemetry",
+        "track",
+        "tracker",
+        "visor",
+        "ws",
+    }
+)
 
 
 def is_direct_service_domain(domain: str, direct_domains: set[str]) -> bool:
@@ -573,11 +575,7 @@ def build_ads() -> list[str]:
         if not rule or rule.startswith(("full:", "keyword:", "regexp:", "domain:", "include:")):
             continue
         domain = normalize_text_domain(rule)
-        if (
-            domain
-            and domain not in ADS_EXCLUDED_DOMAINS
-            and not is_direct_service_domain(domain, direct_domains)
-        ):
+        if domain and domain not in ADS_EXCLUDED_DOMAINS and not is_direct_service_domain(domain, direct_domains):
             domains.add(domain)
 
     # HaGeZi Light
@@ -604,11 +602,7 @@ def build_ads() -> list[str]:
     try:
         for line in fetch_text(PETER_LOWE_URL).splitlines():
             domain = normalize_text_domain(line)
-            if (
-                domain
-                and domain not in ADS_EXCLUDED_DOMAINS
-                and not is_direct_service_domain(domain, direct_domains)
-            ):
+            if domain and domain not in ADS_EXCLUDED_DOMAINS and not is_direct_service_domain(domain, direct_domains):
                 domains.add(domain)
     except Exception as e:  # noqa: BLE001
         log.error("Failed to fetch Peter Lowe list from %s: %s", PETER_LOWE_URL, e)
